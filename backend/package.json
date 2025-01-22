@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --env-file=.env src/index.js"
+    "dev": "node --watch --env-file=.env src/index.js"
   },
   "author": "tamanna && aurpit",
   "license": "ISC",
