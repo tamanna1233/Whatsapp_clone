@@ -7,5 +7,5 @@ dbconnect().then(()=>{
     })
 })
 .catch((err)=>{
-console.log("something went wrong " ,err)
+console.log("something went wrong  " ,err)
 })
