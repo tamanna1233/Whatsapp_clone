@@ -1,23 +1,25 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "dev": "node --watch --env-file=.env src/index.js"
-  },
-  "author": "tamanna && aurpit",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "argon2": "^0.41.1",
-    "cloudinary": "^2.5.1",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.5",
-    "multer": "^1.4.5-lts.1",
-    "nodemon": "^3.1.9",
-    "passport": "^0.7.0"
-  }
+    "name": "backend",
+    "version": "1.0.0",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "dev": "node --watch --env-file=.env src/index.js",
+        "format": "prettier --write ."
+    },
+    "author": "tamanna && aurpit",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "argon2": "^0.41.1",
+        "cloudinary": "^2.5.1",
+        "cors": "^2.8.5",
+        "express": "^4.21.2",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.9.5",
+        "multer": "^1.4.5-lts.1",
+        "nodemon": "^3.1.9",
+        "passport": "^0.7.0",
+        "prettier": "^3.4.2"
+    }
 }

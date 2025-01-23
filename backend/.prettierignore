@@ -1,0 +1,12 @@
+# Ignore node_modules and build directories
+node_modules/
+build/
+
+# Ignore all minified JavaScript files
+*.min.js
+
+# Ignore all test files
+tests/*
+
+# Ignore a specific file
+src/ignoreThisFile.js
