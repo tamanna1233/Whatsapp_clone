@@ -1,7 +1,7 @@
 export const dbname = 'whatsapp_clone';
 export const chatEventEnum = Object.freeze({
     // when socket connected
-    CONNECTED_EVENT: 'connected',
+    CONNECTED_EVENT: 'connect',
     // when scoket disconnect
     DISCONNECT_EVENT: 'disconnect',
     // when particpant join chat
@@ -22,4 +22,4 @@ export const chatEventEnum = Object.freeze({
     // ? when message is deleted
     MESSAGE_DELETE_EVENT: 'messageDeleted',
 });
-export const avilableChatEvent=Object.values(chatEventEnum)
+export const avilableChatEvent = Object.values(chatEventEnum);
