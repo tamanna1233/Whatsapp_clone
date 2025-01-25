@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { instalizeSocket } from './socket/index.js';
+import {instalizeSocket} from "./scoket/index.js"
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {

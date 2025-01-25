@@ -39,7 +39,7 @@ const [text,settext]=useState()
 
   console.log(text)
   const handelmessage=()=>{
-    socket.emit("joinChat",text)
+    socket.emit("messageReceived",text)
   }
   
   return (
