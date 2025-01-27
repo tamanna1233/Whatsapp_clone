@@ -37,6 +37,7 @@ return res
 .status(201)
 .json(new apiResponse(201,'user registered successfully'))
 })
+
 // login 
 const login = asyncHandler(async(req,res)=>{
     const {phoneNo,password}= req.body
@@ -51,8 +52,38 @@ const login = asyncHandler(async(req,res)=>{
     if(!isvalidpassword){
         throw new apiError(400,"invalid password")
     }
-    const {accessToken, refreshToken}= await generateeAccesTokenAndgenerateREfreshToken(user._id).select('-password-refreshToken');
-    logg
+    const {accessToken, refreshToken}= await generateAccessTokenAndRefreshToken(user._id)
+    const loggedinUser = await User.findById(user._id).select('-password-refreshtoken');
+    loggedinUser.refreshToken = refreshToken;
+    await loggedinUser.save({
+        validateBeforeSave:false
+    });
+    const option ={
+        httpOnly :true,
+        secure:true,
+        sameSite:'strict'
+    }
+    return res.status(200).cookie('accessToken',accessToken,option).cookie('refreshToken',refreshToken,option).json(
+        new apiResponse(200,{
+            user:loggedinUser,accessToken,refreshToken
+        },
+        'user login successfully')
+    )
+})
+// logout
+const logout = asyncHandler(async(req,res)=>{
+    const _id = req?.user?._id
+await User.findByIdAndUpdate(_id,
+    {
+        $unset:{refreshToken:1},
+    },
+    {new:true},
+)
+return res.status(200).json(new apiResponse(200,'user logout successfully'))
+})
+// current user
+const currentUser = asyncHandler(async(req,res)=>{
+    return res.status(200).json(new apiResponse(200,req.user,'current user'))
 })
 
-export {register}
+export {register,login,logout,currentUser}

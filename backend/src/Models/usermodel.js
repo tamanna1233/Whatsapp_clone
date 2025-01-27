@@ -35,10 +35,13 @@ const userSchema = new Schema(
         },
         profilePic: {
             type: {
-                url: string,
+                url: String,
             },
             default:
                 'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+        },
+        refreshToken: {
+            type: String,
         },
     },
     {
@@ -52,7 +55,7 @@ userSchema.pre('save', async function name(next) {
 userSchema.methods.isPasswordCorrect = async function (password) {
     return argon2.verify(this.password, password);
 };
-userSchema.methods.generateeAccesToken = async function () {
+userSchema.methods.generateAccesToken = async function () {
     return jwt.sign(
         {
             id: this._id,
@@ -66,7 +69,7 @@ userSchema.methods.generateeAccesToken = async function () {
     );
 };
 
-userSchema.methods.generateREfreshToken = async function () {
+userSchema.methods.generateRefreshToken = async function () {
     return jwt.sign(
         {
             id: this._id,
