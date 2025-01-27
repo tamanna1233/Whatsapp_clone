@@ -1,5 +1,7 @@
 import mongoose, { model, Schema } from 'mongoose';
 
+/* This code snippet is defining a Mongoose schema for a chat entity. Here's a breakdown of what each
+part of the schema represents: */
 const chatSchema = new mongoose.Schema(
     {
         name: {

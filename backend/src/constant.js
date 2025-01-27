@@ -1,7 +1,8 @@
+/* This JavaScript code snippet is defining constants related to a chat application. */
 export const dbname = 'whatsapp_clone';
 export const chatEventEnum = Object.freeze({
     // when socket connected
-    CONNECTED_EVENT: 'connect',
+    CONNECTED_EVENT: 'connected"',
     // when scoket disconnect
     DISCONNECT_EVENT: 'disconnect',
     // when particpant join chat
