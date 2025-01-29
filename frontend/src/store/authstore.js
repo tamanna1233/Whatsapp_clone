@@ -1,62 +1,73 @@
-import { create } from "zustand";
-import { axiosInstances } from "../services/axios";
-import { io } from "socket.io-client";
+import { create } from 'zustand';
+import { axiosInstances } from '../services/axios';
+import { io } from 'socket.io-client';
 
 export const authstore = create((set, get) => ({
-  authUser: "", // Current authenticated user
-  isSigningUp: false,
-  isLoggingIn: false,
-  isCheckingAuth: false,
-  isUpdatingProfile: false,
-  socket: "",
+    authUser: '', // Current authenticated user
+    isSigningUp: false,
+    isLoggingIn: false,
+    isCheckingAuth: false,
+    isUpdatingProfile: false,
+    socket: '',
 
-  // Check the currently authenticated user
-  checkCurrentUser: async () => {
-    try {
-      set({ isCheckingAuth: true });
-      const res = await axiosInstances.get("/getcurrentuser");
-      set({ authUser: res.data, isCheckingAuth: false });
-    } catch (error) {
-      console.error(`Error while checking auth: ${error.message}`);
-      set({ authUser: null, isCheckingAuth: false });
-    }
-  },
+    // Check the currently authenticated user
+    checkCurrentUser: async () => {
+        try {
+            set({ isCheckingAuth: true });
+            const res = await axiosInstances.get('/getcurrentuser');
+            set({ authUser: res.data, isCheckingAuth: false });
+        } catch (error) {
+            console.error(`Error while checking auth: ${error.message}`);
+            set({ authUser: null, isCheckingAuth: false });
+        }
+    },
 
-  // Login user
-  login: async () => {
-    try {
-      const res = await axiosInstances.post("users/login", {
-        phoneNo: 8628047655,
-        password: "12345678",
-      });
-      console.log("Login successful:", res.data);
+    // Login user
+    login: async () => {
+        try {
+            const res = await axiosInstances.post('users/login', {
+                phoneNo: 8628047655,
+                password: '12345678',
+            });
+            console.log('Login successful:', res.data);
 
-      // Set the authenticated user and connect the socket
-      set({ authUser: res.data });
-      get().connectSocket();
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-    }
-  },
+            // Set the authenticated user and connect the socket
+            set({ authUser: res.data });
+            get().connectSocket();
+        } catch (error) {
+            console.error('Login error:', error.response?.data || error.message);
+        }
+    },
 
-  // Connect the socket
-  connectSocket: () => {
-    console.log("Checking socket connection...");
-    const { authUser, socket } = get();
+    signup:async (data) => {
+        try {
+            
+            const res=axiosInstances("/users/register",data)
+            
+        } catch (error) {
+            console.log(error.res)
+        }
+        
+    },
 
-    // Ensure the user is authenticated and the socket isn't already connected
-    if (!authUser || (socket && socket?.connected)) return;
+    // Connect the socket
+    connectSocket: () => {
+        console.log('Checking socket connection...');
+        const { authUser, socket } = get();
 
-    const newSocket = io("http://localhost:8000",{withCredentials:true});
+        // Ensure the user is authenticated and the socket isn't already connected
+        if (!authUser || (socket && socket?.connected)) return;
 
-    newSocket.on("connect", () => {
-      console.log("Socket connected");
-    });
+        const newSocket = io('http://localhost:8000', { withCredentials: true });
 
-    newSocket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+        newSocket.on('connect', () => {
+            console.log('Socket connected');
+        });
 
-    set({ socket: newSocket });
-  },
+        newSocket.on('disconnect', () => {
+            console.log('Socket disconnected');
+        });
+
+        set({ socket: newSocket });
+    },
 }));

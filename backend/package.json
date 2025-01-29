@@ -5,7 +5,9 @@
     "type": "module",
     "scripts": {
         "dev": "node --watch --env-file=.env src/index.js",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "prof":"node --prof index.js"
+
     },
     "author": "tamanna && aurpit",
     "license": "ISC",
