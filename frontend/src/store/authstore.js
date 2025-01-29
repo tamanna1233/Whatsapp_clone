@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { axiosInstances } from '../services/axios';
 import { io } from 'socket.io-client';
+import { toast } from '@/hooks/use-toast';
 
 export const authstore = create((set, get) => ({
     authUser: '', // Current authenticated user
@@ -30,22 +31,33 @@ export const authstore = create((set, get) => ({
                 password: '12345678',
             });
             console.log('Login successful:', res.data);
-
+            toast({title:"login sucessfully"})
             // Set the authenticated user and connect the socket
             set({ authUser: res.data });
             get().connectSocket();
         } catch (error) {
             console.error('Login error:', error.response?.data || error.message);
+            toast({title:"login failed",description:error.response.data.message})
         }
     },
 
     signup:async (data) => {
         try {
             
-            const res=axiosInstances("/users/register",data)
+            const res= await axiosInstances.post("/users/register",data,{ headers: {
+                'Content-Type': 'multipart/form-data',
+              },})
+              console.log(res)
+              if( res.data.success){
+                console.log("register sucessfull",res.data)
+                toast({title:"register sucessfully"})
+                
+              }
             
         } catch (error) {
-            console.log(error.res)
+            console.log(error.response)
+            toast({title:"failed registeration ",description:error.response.message})
+
         }
         
     },

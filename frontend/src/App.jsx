@@ -7,6 +7,7 @@ import { Button } from './components/ui/button';
 import Signup from './components/Signup';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import AppSidebar from './components/Sidebar';
+import { Toaster } from './components/ui/toaster';
 
 function App() {
     const { login } = authstore();
@@ -16,6 +17,7 @@ function App() {
 
     return (
         <>
+                <Toaster/>
             <div className="">
                 <SidebarProvider>
                     <SidebarTrigger />
