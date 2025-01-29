@@ -1,6 +1,7 @@
 import{createBrowserRouter,createRoutesFromElements,Route} from "react-router"
 import App from "@/App"
 import Signup from "@/components/Signup"
+import Signin from "@/components/Signin"
 
 export const router =createBrowserRouter(
     createRoutesFromElements(<>
@@ -8,6 +9,7 @@ export const router =createBrowserRouter(
 
         </Route>
         <Route path="/signup" element={<Signup/>}/>
+        <Route path="/signin" element={<Signin/>}/>
         </>
     )
 )
