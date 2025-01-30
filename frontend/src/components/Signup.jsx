@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useForm } from 'react-hook-form';
 import { Input } from './ui/input';
@@ -9,6 +9,8 @@ import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
 const Signup = () => {
+   /* The code snippet you provided is setting up a React functional component for a signup form. Let's
+   break down the code: */
     const from = useForm({
         defaultValues: {
             name: '',
@@ -22,6 +24,11 @@ const Signup = () => {
     const {signup}=authstore()
  const [image,setimage]=useState()
 
+    /**
+     * The function `handelOnSubmit` takes in data, assigns a profile picture to it, converts the data
+     * into FormData, appends each key-value pair to the FormData, and then calls the `signup` function
+     * with the FormData as an argument.
+     */
     const handelOnSubmit=async(data)=>{
         data.profilepic=image
     const formdata= new FormData()
@@ -33,6 +40,10 @@ const Signup = () => {
 
     }
 
+    /**
+     * The function `handelimage` checks if the uploaded file is a JPEG image and sets it as the image
+     * state, otherwise displays an error message.
+     */
     const handelimage = (e) => {
         const file = e.target.files[0];
         if (file && file.type === 'image/jpeg') {
@@ -51,9 +62,11 @@ const Signup = () => {
             <Card className="m-8 flex flex-col justify-center items-center bg-transparent rounded-none shadow-none border-none">
                     <CardContent className="m-6 bg-black rounded-lg"> 
                         <CardTitle className="mt-2 text-center text-white text-3xl">wellcome to Whatsapp </CardTitle>
-                        <CardHeader className="text-white text-center">if you alreday have account place login</CardHeader>
+                        <CardHeader className="text-white text-center">if you alreday have account please login</CardHeader>
                         <Form {...from}>
-                            <form onSubmit={from.handleSubmit(handelOnSubmit)} className="grid gap-3 px-20 pb-4 text-white">
+                            <form onSubmit={from.handleSubmit(handelOnSubmit)} >
+                                <CardDescription className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-20 pb-4 text-white">
+
                                 <FormField
                                     name="name"
                                     control={from.control}
@@ -97,7 +110,7 @@ const Signup = () => {
                                             <FormMessage/>
                                         </FormItem>
                                     )}
-                                />
+                                    />
                                 <FormField
                                     name="phoneNo"
                                     control={from.control}
@@ -112,7 +125,7 @@ const Signup = () => {
                                             <FormMessage/>
                                         </FormItem>
                                     )}
-                                />
+                                    />
                                 <FormField
                                     name="password"
                                     control={from.control}
@@ -127,7 +140,7 @@ const Signup = () => {
                                             <FormMessage/>
                                         </FormItem>
                                     )}
-                                />
+                                    />
                                 <FormField
                                     name="profilepic"
                                     control={from.control}
@@ -149,8 +162,13 @@ const Signup = () => {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                />
+                                    />
+
+                                    </CardDescription>
+                                    <CardFooter className="flex justify-center items-center">
+
                                 <Button type="submit">submit</Button>
+                                    </CardFooter>
                             </form>
                         </Form>
                     </CardContent>

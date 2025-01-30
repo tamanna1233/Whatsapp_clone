@@ -11,7 +11,8 @@ export const authstore = create((set, get) => ({
     isUpdatingProfile: false,
     socket: '',
 
-    // Check the currently authenticated user
+    /* The `checkCurrentUser` function in the `authstore` zustand store is responsible for checking the
+    currently authenticated user. Here's a breakdown of what it does: */
     checkCurrentUser: async () => {
         try {
             set({ isCheckingAuth: true });
@@ -23,24 +24,30 @@ export const authstore = create((set, get) => ({
         }
     },
 
-    // Login user
-    login: async () => {
+  
+    /* The `login` function in the `authstore` zustand store is responsible for handling the login
+    functionality. Here's a breakdown of what it does: */
+    login: async (data) => {
         try {
-            const res = await axiosInstances.post('users/login', {
-                phoneNo: 8628047655,
-                password: '12345678',
-            });
+            const res = await axiosInstances.post('users/login', data);
             console.log('Login successful:', res.data);
-            toast({title:"login sucessfully"})
-            // Set the authenticated user and connect the socket
-            set({ authUser: res.data });
-            get().connectSocket();
+            if(res.data.success){
+
+                toast({title:"login sucessfully"})
+              
+                set({ authUser: res.data });
+                get().connectSocket();
+            }else{
+                toast({title:"login failed",description:error.response?.data?.message||"something went wrong"})
+            }
         } catch (error) {
             console.error('Login error:', error.response?.data || error.message);
-            toast({title:"login failed",description:error.response.data.message})
+            toast({title:"login failed",description:error.response?.data?.message||"something went wrong"})
         }
     },
 
+    /* The `signup` function in the `authstore` zustand store is responsible for handling the user
+    registration functionality. Here's a breakdown of what it does: */
     signup:async (data) => {
         try {
             
@@ -49,20 +56,25 @@ export const authstore = create((set, get) => ({
               },})
               console.log(res)
               if( res.data.success){
-                console.log("register sucessfull",res.data)
+                
                 toast({title:"register sucessfully"})
                 
               }
+              else{
+                toast({title:"login failed",description:error.response?.data?.message||"something went wrong "})
+            }
             
         } catch (error) {
             console.log(error.response)
-            toast({title:"failed registeration ",description:error.response.message})
+            toast({title:"failed registeration ",description:error.response?.data?.message ||"something went wrong"})
 
         }
         
     },
 
     // Connect the socket
+    /* The `connectSocket` function in the `authstore` zustand store is responsible for establishing a
+    socket connection to a specified server. Here's a breakdown of what it does: */
     connectSocket: () => {
         console.log('Checking socket connection...');
         const { authUser, socket } = get();
