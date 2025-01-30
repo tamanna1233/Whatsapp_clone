@@ -4,6 +4,7 @@ import { User } from '../Models/usermodel.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import { deleteOnCloudninary, uploadOnCloudinary } from '../utils/cloudnariy.js';
 import {generateAccessTokenAndRefreshToken} from "../utils/accesstokengenerator.js"
+
 /* The `register` function is a controller function that handles the registration functionality for a
 user. Here's a breakdown of what it does: */
 const register = asyncHandler(async (req, res) => {
@@ -11,6 +12,8 @@ const register = asyncHandler(async (req, res) => {
     if ([name, phoneNo, email, username, password].some((field) => String(field).trim() == '')) {
         throw new apiError(400, 'fields are required');
     }
+    /* This code snippet is checking if the provided email, phone number, or username already exists in
+    the database. */
     const existingUser = await User.findOne({ $or: [{ email }, { phoneNo }, { username }] });
     if (existingUser) {
         const errorMessage=[]
@@ -27,9 +30,7 @@ const register = asyncHandler(async (req, res) => {
         throw new apiError(400, `  ${errorMessage.join(",") } are already use by  another user`);
     }
     const avatar =req.file.path
-    if(!avatar){
-        throw new apiError(400,"profilepic is required")
-    }
+  
     const profilepic=await uploadOnCloudinary(avatar)
     if(!profilepic){
         throw new apiError(500,"something went wrong while uploading on cloudinary")
@@ -54,6 +55,7 @@ const register = asyncHandler(async (req, res) => {
 
 /* The `login` function is a controller function that handles the login functionality for a user.
 Here's a breakdown of what it does: */
+
 const login = asyncHandler(async (req, res) => {
     const { phoneNo, password } = req.body;
     if ([phoneNo, password].some((field) => String(field).trim() == '')) {
