@@ -16,18 +16,18 @@ const Signin = () => {
     const {login} = authstore()
     const onSubmit = async(data)=>{
         console.log(data)
-        const res = await login(data)
-        console.log(res.data)
-        if(res.data.success === true){
-            console.log('login successful')
-        }
+         login(data)
+        // console.log(res)
+        // if(res.data.success){
+        //     console.log('login successful')
+        // }
 
     }
   return (
     <>
     <Card className='m-20 p-8 bg-black rounded-3xl'>
         <CardContent className='p-0 items-center'>
-<CardTitle className='text-white text-xl text-center pt-5'>Wellcome in Whatsapp</CardTitle>
+<CardTitle className='text-white text-xl text-center pt-5'>Welcome in Whatsapp</CardTitle>
 <CardHeader className='text-white text-center'>if you don't have an account please <Link to= '/signup'>Signup</Link> </CardHeader>
 <Form {...form}>
     <form

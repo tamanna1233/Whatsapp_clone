@@ -61,7 +61,7 @@ const Signup = () => {
         <div>
             <Card className="m-8 flex flex-col justify-center items-center bg-transparent rounded-none shadow-none border-none">
                     <CardContent className="m-6 bg-black rounded-lg"> 
-                        <CardTitle className="mt-2 text-center text-white text-3xl">wellcome to Whatsapp </CardTitle>
+                        <CardTitle className="mt-2 text-center text-white text-3xl">Welcome to Whatsapp </CardTitle>
                         <CardHeader className="text-white text-center">if you alreday have account please login</CardHeader>
                         <Form {...from}>
                             <form onSubmit={from.handleSubmit(handelOnSubmit)} >
