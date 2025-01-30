@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+
 import './App.css';
 import { authstore } from './store/authstore';
-import { Button } from './components/ui/button';
-import Signup from './components/Signup';
+
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import AppSidebar from './components/Sidebar';
 
 function App() {
-    const { login } = authstore();
+    /* This code snippet is using React's `useEffect` hook to call the `checkCurrentUser` function from
+    the `authstore` object when the component mounts or when the `checkCurrentUser` function
+    changes. */
+    const { checkCurrentUser } = authstore();
     useEffect(() => {
-        login();
-    }, [login]);
+        checkCurrentUser();
+    }, [checkCurrentUser]);
 
     return (
         <>
+            
             <div className="">
                 <SidebarProvider>
                     <SidebarTrigger />

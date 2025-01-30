@@ -9,49 +9,50 @@ import {generateAccessTokenAndRefreshToken} from "../utils/accesstokengenerator.
 user. Here's a breakdown of what it does: */
 const register = asyncHandler(async (req, res) => {
     const { name, phoneNo, email, username, password } = req.body;
+    
     if ([name, phoneNo, email, username, password].some((field) => String(field).trim() == '')) {
-        throw new apiError(400, 'fields are required');
+        throw new apiError(400, 'Fields are required');
     }
     /* This code snippet is checking if the provided email, phone number, or username already exists in
     the database. */
+
     const existingUser = await User.findOne({ $or: [{ email }, { phoneNo }, { username }] });
     if (existingUser) {
-        const errorMessage=[]
-        if(existingUser.email===email){
-            errorMessage.push("email")
+        const errorMessage = [];
+        if (existingUser.email === email) errorMessage.push("email");
+        if (existingUser.phoneNo === phoneNo) errorMessage.push("phone no");
+        if (existingUser.username === username) errorMessage.push("username");
+
+        throw new apiError(400, `${errorMessage.join(", ")} are already in use by another user`);
+    }
+
+    const avatar = req?.file?.path;
+    let profilepic = null; // ✅ Declare the variable before the if block
+
+    if (avatar) {
+        profilepic = await uploadOnCloudinary(avatar);
+        if (!profilepic) {
+            throw new apiError(500, "Something went wrong while uploading on Cloudinary");
         }
-    else if (existingUser.phoneNo==phoneNo){
-        errorMessage.push("phone no")
-    }
-    else if(existingUser.username){
-        errorMessage.push("username")
     }
 
-        throw new apiError(400, `  ${errorMessage.join(",") } are already use by  another user`);
-    }
-    const avatar =req.file.path
-  
-    const profilepic=await uploadOnCloudinary(avatar)
-    if(!profilepic){
-        throw new apiError(500,"something went wrong while uploading on cloudinary")
-    }
-
-    // create user data
+    // ✅ Ensure profilePic is assigned correctly even if no avatar is uploaded
     const user = await User.create({
-        name: name,
-        phoneNo: phoneNo,
-        email: email,
-        username: username,
-        password: password,
-        profilePic:{
-            url:profilepic.url ,public_id:profilepic.public_id
-        },
+        name,
+        phoneNo,
+        email,
+        username,
+        password,
+        profilePic: profilepic ? { url: profilepic.url, public_id: profilepic.public_id } : {},
     });
+
     if (!user) {
-        throw new apiError(500, 'Error in registring user');
+        throw new apiError(500, 'Error in registering user');
     }
-    return res.status(201).json(new apiResponse(201, 'user registered successfully'));
+
+    return res.status(201).json(new apiResponse(201, 'User registered successfully'));
 });
+
 
 /* The `login` function is a controller function that handles the login functionality for a user.
 Here's a breakdown of what it does: */
