@@ -68,6 +68,8 @@ const Signup = () => {
                     <CardContent className="m-6 bg-black rounded-lg"> 
                         <CardTitle className="mt-2 text-center text-white text-3xl">wellcome to Whatsapp </CardTitle>
                         <CardHeader className="text-white text-center">if you alreday have account please <Link to='/signin'>login</Link> </CardHeader>
+                        <CardTitle className="mt-2 text-center text-white text-3xl">Welcome to Whatsapp </CardTitle>
+                        
                         <Form {...from}>
                             <form onSubmit={from.handleSubmit(handelOnSubmit)} >
                                 <CardDescription className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-20 pb-4 text-white">
