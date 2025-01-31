@@ -10,7 +10,8 @@ function App() {
     /* This code snippet is using React's `useEffect` hook to call the `checkCurrentUser` function from
     the `authstore` object when the component mounts or when the `checkCurrentUser` function
     changes. */
-    const { checkCurrentUser } = authstore();
+    const { checkCurrentUser ,authUser,socket} = authstore();
+    console.log(authUser,socket)
     useEffect(() => {
         checkCurrentUser();
     }, [checkCurrentUser]);

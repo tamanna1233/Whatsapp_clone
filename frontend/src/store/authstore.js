@@ -2,9 +2,9 @@ import { create } from 'zustand';
 import { axiosInstances } from '../services/axios';
 import { io } from 'socket.io-client';
 import { toast } from '@/hooks/use-toast';
-
+import { useNavigate} from 'react-router';
 export const authstore = create((set, get) => ({
-    authUser: '', // Current authenticated user
+    authUser: '', 
     isSigningUp: false,
     isLoggingIn: false,
     isCheckingAuth: false,
@@ -16,8 +16,10 @@ export const authstore = create((set, get) => ({
     checkCurrentUser: async () => {
         try {
             set({ isCheckingAuth: true });
-            const res = await axiosInstances.get('/getcurrentuser');
+            const res = await axiosInstances.get('/users/currentuser');
             set({ authUser: res.data, isCheckingAuth: false });
+            get().connectSocket();
+
         } catch (error) {
             console.error(`Error while checking auth: ${error.message}`);
             set({ authUser: null, isCheckingAuth: false });
@@ -27,15 +29,16 @@ export const authstore = create((set, get) => ({
   
     /* The `login` function in the `authstore` zustand store is responsible for handling the login
     functionality. Here's a breakdown of what it does: */
-    login: async (data) => {
+    login: async (data,navigate) => {
+       
         try {
             const res = await axiosInstances.post('users/login', data);
             console.log('Login successful:', res.data);
             if(res.data.success){
-
+  
                 toast({title:"login sucessfully"})
-              
-                set({ authUser: res.data });
+                 navigate('/')
+                set({ authUser: res.data.user });
                 get().connectSocket();
             }else{
                 toast({title:"login failed",description:error.response?.data?.message||"something went wrong"})
@@ -78,20 +81,31 @@ export const authstore = create((set, get) => ({
     connectSocket: () => {
         console.log('Checking socket connection...');
         const { authUser, socket } = get();
+    
+        
+    
+        if (!authUser && socket && socket?.connected) return
 
-        // Ensure the user is authenticated and the socket isn't already connected
-        if (!authUser || (socket && socket?.connected)) return;
-
+    
+        // Create a new socket connection
         const newSocket = io('http://localhost:8000', { withCredentials: true });
-
+    
         newSocket.on('connect', () => {
-            console.log('Socket connected');
+            console.log('Socket connected successfully');
+            set({ socket: newSocket });
         });
-
+    
         newSocket.on('disconnect', () => {
             console.log('Socket disconnected');
+            set({ socket: null });
         });
-
+    
+        newSocket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+        });
+    
+        // Save the new socket instance
         set({ socket: newSocket });
-    },
+    }
+    
 }));

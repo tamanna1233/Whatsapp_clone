@@ -7,11 +7,14 @@ Web Token (JWT) for authentication purposes. Here's a breakdown of what the code
  export const verifyjwt =asyncHandler(async(req,res,next)=>{
     try {
         const token=req?.cookies?.accessToken
+       
         if(!token){
             throw new apiError(400,"unauthroised request")
         }
-        const decodetokeninfo = jwt.verify(token, process.env.ACCESSTOKENSECRET);
-        const user = await User.findById(decodetokeninfo?._id).select('-password -refreshToken');
+        const decodetokeninfo = jwt.verify(token, process.env.AccessTokenSecert);
+        
+        const user = await User.findById(decodetokeninfo?.id).select('-password -refreshToken');
+       
         if (!user) {
             console.log(401, 'invalid access token');
             throw new apiError(401, 'invalid access token');

@@ -4,9 +4,10 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { useForm } from 'react-hook-form'
 import { authstore } from '@/store/authstore'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 const Signin = () => {
+    const navigate=useNavigate()
     const form =useForm({
         defaultValues:{
         phoneNo:"",
@@ -15,13 +16,7 @@ const Signin = () => {
     })
     const {login} = authstore()
     const onSubmit = async(data)=>{
-        console.log(data)
-        const res = await login(data)
-        console.log(res.data)
-        if(res.data.success === true){
-            console.log('login successful')
-        }
-
+        login(data,navigate)
     }
   return (
     <>

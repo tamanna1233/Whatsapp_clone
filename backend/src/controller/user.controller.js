@@ -15,7 +15,7 @@ const register = asyncHandler(async (req, res) => {
     }
     /* This code snippet is checking if the provided email, phone number, or username already exists in
     the database. */
-
+    const avatar = req?.file?.path;
     const existingUser = await User.findOne({ $or: [{ email }, { phoneNo }, { username }] });
     if (existingUser) {
         const errorMessage = [];
@@ -26,7 +26,6 @@ const register = asyncHandler(async (req, res) => {
         throw new apiError(400, `${errorMessage.join(", ")} are already in use by another user`);
     }
 
-    const avatar = req?.file?.path;
     let profilepic = null; // ✅ Declare the variable before the if block
 
     if (avatar) {

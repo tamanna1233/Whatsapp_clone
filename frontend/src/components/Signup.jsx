@@ -7,6 +7,7 @@ import { authstore } from '@/store/authstore';
 import { Button } from './ui/button';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { Link } from 'react-router';
 
 const Signup = () => {
    /* The code snippet you provided is setting up a React functional component for a signup form. Let's
@@ -45,8 +46,11 @@ const Signup = () => {
      * state, otherwise displays an error message.
      */
     const handelimage = (e) => {
+ 
         const file = e.target.files[0];
-        if (file && file.type === 'image/jpeg') {
+        console.log(file.type)
+        
+        if (file && file.type === 'image/jpeg'||'image/png') {
           setimage(file);
         } else {
           toast({
@@ -56,13 +60,14 @@ const Signup = () => {
           });
         }
       };
+      console.log(image)
 
     return (
         <div>
             <Card className="m-8 flex flex-col justify-center items-center bg-transparent rounded-none shadow-none border-none">
                     <CardContent className="m-6 bg-black rounded-lg"> 
                         <CardTitle className="mt-2 text-center text-white text-3xl">wellcome to Whatsapp </CardTitle>
-                        <CardHeader className="text-white text-center">if you alreday have account please login</CardHeader>
+                        <CardHeader className="text-white text-center">if you alreday have account please <Link to='/signin'>login</Link> </CardHeader>
                         <Form {...from}>
                             <form onSubmit={from.handleSubmit(handelOnSubmit)} >
                                 <CardDescription className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-20 pb-4 text-white">
@@ -152,12 +157,12 @@ const Signup = () => {
                                             <FormControl>
                                                 <Input
                                                     type="file"
+                                                    {...field}
+                                                    placeholder="enter your profilepic"
                                                     onChange={(e) => {
                                                         handelimage(e);
                                                         field.onChange(e);
                                                       }}
-                                                      {...field}
-                                                    placeholder="enter your profilepic"
                                                 />
                                             </FormControl>
                                         </FormItem>
