@@ -235,7 +235,7 @@ const SidebarTrigger = React.forwardRef(({ className, onClick, ...props }, ref) 
             }}
             {...props}
         >
-            <PanelLeft  color='black'/>
+            <PanelLeft color="white" />
             <span className="sr-only">Toggle Sidebar</span>
         </Button>
     );

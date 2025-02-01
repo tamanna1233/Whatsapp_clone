@@ -46,10 +46,10 @@ const AppSidebar = () => {
         <div>
             <SidebarProvider>
                 <Sidebar collapsible="icon" className="">
-                    <SidebarHeader className="bg-green-950">
-                        <SidebarTrigger className="" />
+                    <SidebarHeader className="bg-black">
+                        <SidebarTrigger />
                     </SidebarHeader>
-                    <SidebarContent className="bg-green-950 backdrop-blur-md">
+                    <SidebarContent className="bg-black backdrop-blur-md">
                         <SidebarGroup>
                             <SidebarGroupLabel className="text-2xl font-semibold  text-white">
                                 Whatsapp
@@ -70,7 +70,7 @@ const AppSidebar = () => {
                             </SidebarGroupContent>
                         </SidebarGroup>
                     </SidebarContent>
-                    <SidebarFooter className="bg-green-950">
+                    <SidebarFooter className="bg-black">
                         <Settings color="white" />
                     </SidebarFooter>
                 </Sidebar>

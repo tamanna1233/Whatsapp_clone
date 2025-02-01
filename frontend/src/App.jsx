@@ -1,36 +1,28 @@
-import { useEffect, useState } from 'react';
-
+import { useEffect, useCallback } from 'react';
 import './App.css';
 import { authstore } from './store/authstore';
-
-import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import AppSidebar from './components/Sidebar';
-import ChatBox from './components/ChatBox';
+import { SidebarInset, SidebarProvider } from './components/ui/sidebar';
+import { Outlet } from 'react-router';
 
 function App() {
-    /* This code snippet is using React's `useEffect` hook to call the `checkCurrentUser` function from
-    the `authstore` object when the component mounts or when the `checkCurrentUser` function
-    changes. */
-    const { checkCurrentUser ,authUser,socket} = authstore();
-    console.log(authUser,socket)
-    useEffect(() => {
+    const { checkCurrentUser, authUser, socket } = authstore();
+
+    console.log(authUser, socket);
+
+    const checkUser = useCallback(() => {
         checkCurrentUser();
     }, [checkCurrentUser]);
 
+    useEffect(() => {
+        checkUser();
+    }, [checkUser]);
+
     return (
-        <>
-            
-            <div className="">
-                <SidebarProvider>
-                    <SidebarTrigger />
-                    <AppSidebar />
-                    <SidebarInset className="">
-                       <ChatBox/>
-                    </SidebarInset>
-                </SidebarProvider>
-               
-            </div>
-        </>
+        <div className="flex h-screen fixed w-screen">
+            <AppSidebar />
+            <Outlet />
+        </div>
     );
 }
 
