@@ -29,6 +29,16 @@ const userSchema = new Schema(
             trim: true,
             lowercase: true,
         },
+        about:{
+            type:String,
+            trim:true,
+            lowercase:true,
+            default:"hi there i am using whatsapp"
+        },
+        statuses:[{
+          type:Schema.Types.ObjectId,
+          ref:"Status"
+        }],
         password: {
             type: String,
             required: [true, 'password is required'],

@@ -44,10 +44,10 @@ const AppSidebar = () => {
 
     return (
         <div>
-            <SidebarProvider  >
-                <Sidebar collapsible="icon"  className="">
+            <SidebarProvider>
+                <Sidebar collapsible="icon" className="">
                     <SidebarHeader className="bg-black">
-                        <SidebarTrigger/>
+                        <SidebarTrigger />
                     </SidebarHeader>
                     <SidebarContent className="bg-black backdrop-blur-md">
                         <SidebarGroup>

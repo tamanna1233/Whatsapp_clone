@@ -6,24 +6,24 @@ import { SidebarInset, SidebarProvider } from './components/ui/sidebar';
 import { Outlet } from 'react-router';
 
 function App() {
-  const { checkCurrentUser, authUser, socket } = authstore();
+    const { checkCurrentUser, authUser, socket } = authstore();
 
-  console.log(authUser, socket);
+    console.log(authUser, socket);
 
-  const checkUser = useCallback(() => {
-    checkCurrentUser();
-  }, [checkCurrentUser]);
+    const checkUser = useCallback(() => {
+        checkCurrentUser();
+    }, [checkCurrentUser]);
 
-  useEffect(() => {
-    checkUser();
-  }, [checkUser]);
+    useEffect(() => {
+        checkUser();
+    }, [checkUser]);
 
-  return (
-    <div className="flex h-screen fixed w-screen">
-        <AppSidebar />
-          <Outlet/>
-    </div>
-  );
+    return (
+        <div className="flex h-screen fixed w-screen">
+            <AppSidebar />
+            <Outlet />
+        </div>
+    );
 }
 
 export default App;
