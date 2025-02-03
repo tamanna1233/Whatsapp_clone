@@ -19,7 +19,7 @@ function App() {
     }, [checkUser]);
 
     return (
-        <div className="flex h-screen fixed w-screen">
+        <div className="flex h-screen fixed w-screen font-serif">
             <AppSidebar />
             <Outlet />
         </div>

@@ -19,6 +19,9 @@ export const generateAccessTokenAndRefreshToken = async (userID) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new apiError(500, `something went wrong while generating refresh and access token ${error.message}`);
+        throw new apiError(
+            500,
+            `something went wrong while generating refresh and access token ${error.message}`,
+        );
     }
 };

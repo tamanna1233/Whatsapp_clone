@@ -3,13 +3,13 @@ import { apiError } from '../utils/apiError.js';
 import { User } from '../Models/usermodel.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import { deleteOnCloudninary, uploadOnCloudinary } from '../utils/cloudnariy.js';
-import {generateAccessTokenAndRefreshToken} from "../utils/accesstokengenerator.js"
+import { generateAccessTokenAndRefreshToken } from '../utils/accesstokengenerator.js';
 
 /* The `register` function is a controller function that handles the registration functionality for a
 user. Here's a breakdown of what it does: */
 const register = asyncHandler(async (req, res) => {
     const { name, phoneNo, email, username, password } = req.body;
-    
+
     if ([name, phoneNo, email, username, password].some((field) => String(field).trim() == '')) {
         throw new apiError(400, 'Fields are required');
     }
@@ -19,11 +19,11 @@ const register = asyncHandler(async (req, res) => {
     const existingUser = await User.findOne({ $or: [{ email }, { phoneNo }, { username }] });
     if (existingUser) {
         const errorMessage = [];
-        if (existingUser.email === email) errorMessage.push("email");
-        if (existingUser.phoneNo === phoneNo) errorMessage.push("phone no");
-        if (existingUser.username === username) errorMessage.push("username");
+        if (existingUser.email === email) errorMessage.push('email');
+        if (existingUser.phoneNo === phoneNo) errorMessage.push('phone no');
+        if (existingUser.username === username) errorMessage.push('username');
 
-        throw new apiError(400, `${errorMessage.join(", ")} are already in use by another user`);
+        throw new apiError(400, `${errorMessage.join(', ')} are already in use by another user`);
     }
 
     let profilepic = null; // ✅ Declare the variable before the if block
@@ -31,7 +31,7 @@ const register = asyncHandler(async (req, res) => {
     if (avatar) {
         profilepic = await uploadOnCloudinary(avatar);
         if (!profilepic) {
-            throw new apiError(500, "Something went wrong while uploading on Cloudinary");
+            throw new apiError(500, 'Something went wrong while uploading on Cloudinary');
         }
     }
 
@@ -52,7 +52,6 @@ const register = asyncHandler(async (req, res) => {
     return res.status(201).json(new apiResponse(201, 'User registered successfully'));
 });
 
-
 /* The `login` function is a controller function that handles the login functionality for a user.
 Here's a breakdown of what it does: */
 
@@ -69,7 +68,7 @@ const login = asyncHandler(async (req, res) => {
     if (!isvalidpassword) {
         throw new apiError(400, 'invalid password');
     }
-  
+
     const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user._id);
     const loggedinUser = await User.findById(user._id).select('-password -refreshtoken');
     loggedinUser.refreshToken = refreshToken;

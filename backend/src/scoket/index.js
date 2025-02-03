@@ -53,20 +53,20 @@ const mountParticipantStoppedTypingEvent = (socket) => {
  * @returns The `instalizeSocket` function returns the event listener for handling socket connections.
  */
 const instalizeSocket = (io) => {
-    return io.on("connection", async (socket) => {
+    return io.on('connection', async (socket) => {
         try {
             const cookies = cookie.parse(socket.handshake?.headers?.cookie || '');
             let token = cookies?.accessToken;
             if (!token) {
                 token = socket.handshake.auth.token;
             }
-            
+
             if (!token) {
                 throw new apiError(400, 'unauthroised handshake  token is missing');
             }
-            
+
             const decodeToken = jwt.verify(token, process.env.AccessTokenSecert);
-            
+
             const user = await User.findById(decodeToken.id).select('-password -refreshToken ');
             if (!user) {
                 throw new apiError(404, 'unauthroised handshake token is invaild');

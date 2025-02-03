@@ -29,16 +29,18 @@ const userSchema = new Schema(
             trim: true,
             lowercase: true,
         },
-        about:{
-            type:String,
-            trim:true,
-            lowercase:true,
-            default:"hi there i am using whatsapp"
+        about: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            default: 'hi there i am using whatsapp',
         },
-        statuses:[{
-          type:Schema.Types.ObjectId,
-          ref:"Status"
-        }],
+        statuses: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Status',
+            },
+        ],
         password: {
             type: String,
             required: [true, 'password is required'],
@@ -46,7 +48,7 @@ const userSchema = new Schema(
         profilePic: {
             type: {
                 url: String,
-                public_id:String
+                public_id: String,
             },
             default:
                 'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7',
@@ -64,7 +66,7 @@ schema is a pre-save hook that runs before saving a user document to the databas
 userSchema.pre('save', async function name(next) {
     if (!this.isModified('password')) return next();
     this.password = await argon2.hash(this.password, { type: argon2.argon2id });
-    next()
+    next();
 });
 
 /* The `userSchema.methods.isPasswordCorrect` function is a method defined on the userSchema that is

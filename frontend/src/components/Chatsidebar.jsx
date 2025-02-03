@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader } from './ui/card';
 import { FaPenToSquare } from 'react-icons/fa6';
 import { Input } from './ui/input';
@@ -10,113 +10,134 @@ import {
     DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
 import { DropdownMenuItem } from './ui/dropdown-menu';
+import { usemessage } from '@/store/messagestore';
 
-const Chatsidebar = () => {
+const Chats_idebar = () => {
+    const { isAvialableChats, avialablechats, setSelectedChat, selectedChat } = usemessage();
+   /**
+    * The function `handleAvailableChat` calls the `avialablechats` function asynchronously.
+    */
+    const handleAvailableChat = async () => {
+        avialablechats();
+    };
+   /**
+    * The function `handelselectedChat` sets the selected chat data asynchronously.
+    */
+    const handelselectedChat = async (data) => {
+        console.log(data)
+        setSelectedChat(data);
+    };
+
+    console.log("selected chat",selectedChat)
+   /* dummy data
+   The above code is defining an array of chat objects. Each chat object contains properties such as
+   _id, name, lastMessage, time, and profilePic. These objects represent chat conversations with
+   different users, including their names, last messages, timestamps, and profile pictures. */
     const chats = [
         {
-            id: 1,
+            _id: 1,
             name: 'John Doe',
             lastMessage: 'Hey, how are you?',
             time: '10:30 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=1" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=1 '},
         },
         {
-            id: 2,
+            _id: 2,
             name: 'Jane Smith',
             lastMessage: 'See you later!',
             time: '09:45 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=2" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=2 '},
         },
         {
-            id: 3,
+            _id: 3,
             name: 'Alex Brown',
             lastMessage: 'Let’s catch up soon.',
             time: '08:15 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=3" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=3 '},
         },
         {
-            id: 4,
+            _id: 4,
             name: 'Emily Clark',
-            lastMessage: 'Did you get the documents?',
+            lastMessage: 'D_id you get the documents?',
             time: 'Yesterday',
-            profilePic: 'https://i.pravatar.cc/40?img=4" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=4 '},
         },
         {
-            id: 5,
+            _id: 5,
             name: 'Michael Lee',
             lastMessage: 'I’ll call you back in 10 minutes.',
             time: 'Yesterday',
-            profilePic: 'https://i.pravatar.cc/40?img=5" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=5 '},
         },
         {
-            id: 6,
+            _id: 6,
             name: 'John Doe',
             lastMessage: 'Hey, how are you?',
             time: '10:30 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=1" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=6 '},
         },
         {
-            id: 7,
+            _id: 7,
             name: 'Jane Smith',
             lastMessage: 'See you later!',
             time: '09:45 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=2" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=7 '},
         },
         {
-            id: 8,
+            _id: 8,
             name: 'Alex Brown',
             lastMessage: 'Let’s catch up soon.',
             time: '08:15 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=3" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=8 '},
         },
         {
-            id: 9,
+            _id: 9,
             name: 'Emily Clark',
-            lastMessage: 'Did you get the documents?',
+            lastMessage: 'D_id you get the documents?',
             time: 'Yesterday',
-            profilePic: 'https://i.pravatar.cc/40?img=4" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=9 '},
         },
         {
-            id: 10,
+            _id: 10,
             name: 'Michael Lee',
             lastMessage: 'I’ll call you back in 10 minutes.',
             time: 'Yesterday',
-            profilePic: 'https://i.pravatar.cc/40?img=5" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=10 '},
         },
         {
-            id: 11,
+            _id: 11,
             name: 'John Doe',
             lastMessage: 'Hey, how are you?',
             time: '10:30 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=1" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=11 '},
         },
         {
-            id: 12,
+            _id: 12,
             name: 'Jane Smith',
             lastMessage: 'See you later!',
             time: '09:45 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=2" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=12 '},
         },
         {
-            id: 13,
+            _id: 13,
             name: 'Alex Brown',
             lastMessage: 'Let’s catch up soon.',
             time: '08:15 AM',
-            profilePic: 'https://i.pravatar.cc/40?img=3" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=13 '},
         },
         {
-            id: 14,
+            _id: 14,
             name: 'Emily Clark',
-            lastMessage: 'Did you get the documents?',
+            lastMessage: 'D_id you get the documents?',
             time: 'Yesterday',
-            profilePic: 'https://i.pravatar.cc/40?img=4" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=14 '},
         },
         {
-            id: 15,
+            _id: 15,
             name: 'Michael Lee',
             lastMessage: 'I’ll call you back in 10 minutes.',
             time: 'Yesterday',
-            profilePic: 'https://i.pravatar.cc/40?img=5" ',
+            profilePic: {url:'https://i.pravatar.cc/40?img=15 '},
         },
     ];
     return (
@@ -125,35 +146,48 @@ const Chatsidebar = () => {
                 <CardHeader className="p-0 mb-4">
                     <div className="flex justify-between items-center text-xl text-white p-2 mt-4">
                         <span>Chats</span>
-                        <DropdownMenu className="">
+                        <DropdownMenu
+                            className=""
+                            onOpenChange={(open) => {
+                                if (open) {
+                                    console.log('Dropdown opened');
+                                    handleAvailableChat();
+                                }
+                            }}
+                        >
                             <DropdownMenuTrigger asChild>
                                 <FaPenToSquare />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="bg-black h-96 w-72 mt-5 backdrop-blur-md z-50 rounded-md">
                                 <ScrollArea className="h-96 ">
-                                    {chats.map((chat) => (
-                                        <div
-                                            key={chat.id}
-                                            className="p-2 px-4 text-white hover:bg-gray-800 "
-                                        >
-                                            <DropdownMenuItem>
-                                                <div className="flex items-center justify-between  w-full">
-                                                    <div className="flex items-center">
+                                    {isAvialableChats.length > 0 &&
+                                        isAvialableChats.map((chat) => (
+                                            <div key={chat._id} className="py-2 text-white  ">
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handelselectedChat(chat);
+                                                    }}
+                                                    className=" hover:bg-gray-700 "
+                                                >
+                                                    <div className="flex justify-between items-center gap-2">
                                                         <img
-                                                            src={chat.profilePic}
-                                                            alt={chat.name}
-                                                            className="w-10 h-10  object-cover mr-3 rounded-full"
+                                                            src={chat.profilePic?.url}
+                                                            alt=""
+                                                            className="w-10 h-10 rounded-full object-cover mr-3"
                                                         />
-                                                        <div>
+                                                        <div className="flex flex-col">
                                                             <span className="font-semibold">
                                                                 {chat.name}
                                                             </span>
+                                                            <span className="text-gray-500 font-medium">
+                                                                {chat.about}
+                                                            </span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </DropdownMenuItem>
-                                        </div>
-                                    ))}
+                                                </DropdownMenuItem>
+                                            </div>
+                                        ))}
                                 </ScrollArea>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -163,18 +197,19 @@ const Chatsidebar = () => {
                     </div>
                     {/* <Separator className="mt-2" /> */}
                 </CardHeader>
-                <CardDescription>
-                    <ScrollArea className=" h-screen">
+                <CardDescription className="h-screen">
+                    <ScrollArea className=" h-5/6">
                         <div className="space-y-2">
                             {chats.map((chat) => (
                                 <div
-                                    key={chat.id}
-                                    className="p-2 px-4 text-white hover:bg-gray-800 rounded-md"
+                                    key={chat._id}
+                                    className="p-2 px-4 text-white hover:bg-gray-800 rounded-md cursor-pointer"
+                                    onClick={(e)=>{e.preventDefault() ;handelselectedChat(chat)}}
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center">
                                             <img
-                                                src={chat.profilePic}
+                                                src={chat.profilePic?.url}
                                                 alt={chat.name}
                                                 className="w-10 h-10 rounded-full object-cover mr-3"
                                             />
@@ -197,4 +232,4 @@ const Chatsidebar = () => {
     );
 };
 
-export default Chatsidebar;
+export default Chats_idebar;
