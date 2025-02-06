@@ -10,10 +10,15 @@ import { Plus } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { usemessage } from '@/store/messagestore';
 import { FaWhatsapp } from 'react-icons/fa6';
+import { authstore } from '@/store/authstore';
 const ChatBox = () => {
     const {selectedChat}=usemessage()
-    
-    
+    const {authUser}=authstore()
+    console.log(selectedChat)
+
+    const otherParticipant = selectedChat?.participants.find(
+        (participant) => participant._id !== authUser._id
+      );
     return (
         <>
             <Card className="h-full m-0 rounded-none border-none bg-slate-800 p-0 ">
@@ -21,8 +26,8 @@ const ChatBox = () => {
                     <CardHeader className="bg-gray-950">
                         <div className="px-0 grid grid-cols-2 pt-1   ">
                             <div className="flex gap-3 justify-start ">
-                                <div><img src={selectedChat.profilePic?.url} alt="" className='w-7 h-7 rounded-full' /></div>
-                                <h2 className='text-white'>{selectedChat.name}</h2>
+                                <div><img src={otherParticipant.profilePic?.url} alt="" className='w-7 h-7 rounded-full' /></div>
+                                <h2 className='text-white'>{otherParticipant.name}</h2>
                             </div>
                             <div className="flex  justify-end pt-0 ">
                                 <Button className="bg-transparent hover:bg-slate-300 border-none rounded-full shadow-none">

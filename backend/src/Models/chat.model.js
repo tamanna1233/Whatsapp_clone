@@ -9,17 +9,18 @@ const chatSchema = new mongoose.Schema(
             required: true,
         },
         isGroupChat: {
-            type: String,
-            required: true,
+            type: Boolean,
+            default:false ,
         },
         lastmessage: {
             type: String,
-            required: true,
         },
-        participants: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-        },
+        participants: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+            },
+        ],
         admin: {
             type: Schema.Types.ObjectId,
             ref: 'User',

@@ -54,6 +54,7 @@ const mountParticipantStoppedTypingEvent = (socket) => {
  */
 const instalizeSocket = (io) => {
     return io.on('connection', async (socket) => {
+      
         try {
             const cookies = cookie.parse(socket.handshake?.headers?.cookie || '');
             let token = cookies?.accessToken;
@@ -73,9 +74,9 @@ const instalizeSocket = (io) => {
             }
             socket.user = user;
             socket.join(user._id);
-            socket.emit(chatEventEnum.CONNECTED_EVENT);
+            socket.emit(chatEventEnum.CONNECTED_EVENT,user._id.toString());
             console.log(`user is conected  👤 ${user._id.toString()}`);
-
+           
             mountJoinChatEvent(socket);
             mountParticipantTypingEvent(socket);
             mountParticipantStoppedTypingEvent(socket);
@@ -113,6 +114,12 @@ const instalizeSocket = (io) => {
  * which emits the specified event with the given payload to all sockets in the specified room.
  */
 const emitSocketEvent = async (req, roomid, event, payload) => {
-    return req.app.get('io').in(roomid).emit(event, payload);
+    const io=req.app.get("io")
+    console.log("room",roomid)
+    io.in(roomid).emit(event, payload);
+      
+  
 };
+
+
 export { instalizeSocket, emitSocketEvent };

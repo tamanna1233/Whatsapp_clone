@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { axiosInstances } from '../services/axios';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router';
+import { chatEventEnum } from '@/constants';
 export const authstore = create((set, get) => ({
     authUser: '',
     isSigningUp: false,
@@ -17,8 +18,11 @@ export const authstore = create((set, get) => ({
         try {
             set({ isCheckingAuth: true });
             const res = await axiosInstances.get('/users/currentuser');
-            set({ authUser: res.data, isCheckingAuth: false });
+            set({ authUser: res.data.data, isCheckingAuth: false });
             get().connectSocket();
+           
+
+            
         } catch (error) {
             console.error(`Error while checking auth: ${error.message}`);
             set({ authUser: null, isCheckingAuth: false });
@@ -82,19 +86,20 @@ export const authstore = create((set, get) => ({
     /* The `connectSocket` function in the `authstore` zustand store is responsible for establishing a
     socket connection to a specified server. Here's a breakdown of what it does: */
     connectSocket: () => {
-        console.log('Checking socket connection...');
         const { authUser, socket } = get();
-
-        if (!authUser && socket && socket?.connected) return;
-
+        
+        if (!authUser || socket && socket?.connected) return;
+        
         // Create a new socket connection
         const newSocket = io('http://localhost:8000', { withCredentials: true });
-
+          
+        console.log('Checking socket connection...');
         newSocket.on('connect', () => {
             console.log('Socket connected successfully');
             set({ socket: newSocket });
+            
         });
-
+       
         newSocket.on('disconnect', () => {
             console.log('Socket disconnected');
             set({ socket: null });
@@ -103,8 +108,8 @@ export const authstore = create((set, get) => ({
         newSocket.on('connect_error', (error) => {
             console.error('Socket connection error:', error);
         });
-
-        // Save the new socket instance
-        set({ socket: newSocket });
+        
+        // // Save the new socket instance
+        // set({ socket: newSocket });
     },
 }));
