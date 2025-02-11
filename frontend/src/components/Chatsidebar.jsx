@@ -13,6 +13,7 @@ import {
 import { usemessage } from "@/store/messagestore";
 import { authstore } from "@/store/authstore";
 import { chatEventEnum } from "@/constants";
+
 const ChatsSidebar = () => {
   const {
     availableChats,
@@ -22,11 +23,13 @@ const ChatsSidebar = () => {
     createorGetOneOnOneChat,
     getyourChats,
     previousChats,
-    setpreviousChats
+    setpreviousChats,
   } = usemessage();
-  
-  const { socket, connectSocket, authUser ,checkUser} = authstore(); // Get current user
+
+  const { socket, connectSocket, authUser } = authstore(); // Get current user
   const [chat, setChat] = useState([]);
+  const [typing, setTyping] = useState(false);
+  const [typingchatId, setTypingChatId] = useState(null);
 
   useEffect(() => {
     setChat(previousChats); // Update chat state when previousChats changes
@@ -37,15 +40,33 @@ const ChatsSidebar = () => {
   };
 
   const handleSelectedChat = async (chatId) => {
-   await createorGetOneOnOneChat(chatId);
-};
+    await createorGetOneOnOneChat(chatId);
+  };
 
+  // Handle typing events
+  useEffect(() => {
+    if (!socket) return;
 
+    socket.on(chatEventEnum.TYPING_EVENT, (chatId) => {
+      if (selectedChat?._id === chatId) return;
+      setTypingChatId(chatId);
+      setTyping(true);
+    });
 
+    socket.on(chatEventEnum.STOP_TYPING_EVENT, () => {
+      setTyping(false);
+      setTypingChatId(null);
+    });
+
+    return () => {
+      socket.off(chatEventEnum.TYPING_EVENT);
+      socket.off(chatEventEnum.STOP_TYPING_EVENT);
+    };
+  }, [socket, selectedChat]);
 
   useEffect(() => {
     getyourChats();
-  }, [createorGetOneOnOneChat, socket, selectedChat]);
+  }, []);
 
   useEffect(() => {
     if (!socket) {
@@ -53,15 +74,17 @@ const ChatsSidebar = () => {
       return;
     }
 
-    console.log("Socket connected:", socket);
+    if (chat.length > 0) {
+      chat.forEach((chat) => {
+        socket.emit(chatEventEnum.JOIN_CHAT_EVENT, chat._id);
+      });
+    }
 
     socket.on(chatEventEnum.CONNECTED_EVENT, () => {
       console.log("Connected to socket");
-      socket.emit(chatEventEnum.JOIN_CHAT_EVENT, authUser._id);
     });
 
     socket.on(chatEventEnum.NEW_CHAT_EVENT, (chat) => {
-      console.log("New chat received:", chat);
       setpreviousChats((prev) => [...prev, chat]);
     });
 
@@ -69,8 +92,9 @@ const ChatsSidebar = () => {
       socket.off(chatEventEnum.CONNECTED_EVENT);
       socket.off(chatEventEnum.NEW_CHAT_EVENT);
     };
-  }, [socket, connectSocket]);
+  }, [socket, connectSocket, chat]);
 
+  console.log(chat)
   return (
     <Card className="min-h-screen rounded-none bg-gray-950 p-0 m-0 border-none shadow-none">
       <CardContent className="p-0">
@@ -88,26 +112,25 @@ const ChatsSidebar = () => {
                 <DropdownMenuSeparator />
                 <ScrollArea className="h-96">
                   {availableChats?.length > 0 &&
-                    availableChats.map((chat) => (
-                      <div key={chat._id} className="py-2 text-white">
+                    availableChats?.map((chat) => (
+                      <div key={chat?._id} className="py-2 text-white">
                         <DropdownMenuItem
                           onClick={(e) => {
                             e.preventDefault();
-                            
-                            handleSelectedChat(chat._id);
+                            handleSelectedChat(chat?._id);
                           }}
                           className="hover:bg-gray-700"
                         >
                           <div className="flex justify-between items-center gap-2">
                             <img
-                              src={chat.profilePic?.url}
+                              src={chat?.profilePic?.url}
                               alt=""
                               className="w-10 h-10 rounded-full object-cover mr-3"
                             />
                             <div className="flex flex-col">
-                              <span className="font-semibold">{chat.name}</span>
+                              <span className="font-semibold">{chat?.name}</span>
                               <span className="text-gray-500 font-medium">
-                                {chat.about}
+                                {chat?.about}
                               </span>
                             </div>
                           </div>
@@ -127,17 +150,16 @@ const ChatsSidebar = () => {
             <div className="space-y-2">
               {chat?.map((chatItem) => {
                 // Find the correct participant (not the logged-in user)
-               
-                const otherParticipant = chatItem.participants.find(
-                  (participant) => participant._id !== authUser._id
+                const otherParticipant = chatItem?.participants?.find(
+                  (participant) => participant?._id !== authUser?._id
                 );
+
                 return (
                   <div
                     key={chatItem._id}
                     className="p-2 px-4 text-white hover:bg-gray-800 rounded-md cursor-pointer"
                     onClick={(e) => {
                       e.preventDefault();
-                     
                       setSelectedChat(chatItem);
                     }}
                   >
@@ -152,8 +174,15 @@ const ChatsSidebar = () => {
                           <span className="font-semibold">
                             {otherParticipant?.name}
                           </span>
-                          <p className="text-sm text-gray-300">
-                            {chatItem.lastMessage}
+                          <p className="text-sm text-emerald-500">
+                            {typingchatId === chatItem._id && typing ? (
+                              <span className="">typing<span className="animate-pulse">...</span></span>
+                            ) : (
+                              <span className="text-white">
+
+                               { chatItem.lastmessage?.[0]?.content || "last message"}
+                              </span>
+                            )}
                           </p>
                         </div>
                       </div>

@@ -73,8 +73,8 @@ const instalizeSocket = (io) => {
                 throw new apiError(404, 'unauthroised handshake token is invaild');
             }
             socket.user = user;
-            socket.join(user._id);
             socket.emit(chatEventEnum.CONNECTED_EVENT,user._id.toString());
+            socket.join(user._id.toString());
             console.log(`user is conected  👤 ${user._id.toString()}`);
            
             mountJoinChatEvent(socket);

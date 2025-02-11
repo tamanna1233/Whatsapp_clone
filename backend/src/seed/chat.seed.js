@@ -26,7 +26,7 @@ const generateUsers = async (count = 10) => {
             name: faker.person.fullName(),
             phoneNo: faker.phone.number(),
             email: faker.internet.email().toLowerCase(),
-            username: faker.internet.userName().toLowerCase(),
+            username: faker.internet.username().toLowerCase(),
             about: faker.lorem.sentence(),
             password: hashedPassword,
             profilePic: {
@@ -44,8 +44,7 @@ const generateUsers = async (count = 10) => {
 const seedDatabase = async () => {
     await connectDB();
     
-    // Clear existing users (optional)
-    await User.deleteMany();
+  
     console.log('Existing users deleted');
 
     const users = await generateUsers(10);
