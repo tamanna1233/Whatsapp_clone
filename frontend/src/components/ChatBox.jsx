@@ -1,135 +1,351 @@
-import React, { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from './ui/card';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, PhoneCall, Timer, Video } from 'lucide-react';
 import { Search } from 'lucide-react';
 import { Phone } from 'lucide-react';
 import { SendHorizontal } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
+import { useChat } from '@/store/chatStore';
+import { FaPhone, FaVideo, FaWhatsapp } from 'react-icons/fa6';
+import { authstore } from '@/store/authstore';
+import { chatEventEnum } from '@/constants';
+import { DropdownMenu, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenuContent } from './ui/dropdown-menu';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Label } from './ui/label';
+import { Separator } from './ui/separator';
+import { AiFillVideoCamera } from 'react-icons/ai';
 import { usemessage } from '@/store/messagestore';
-import { FaWhatsapp } from 'react-icons/fa6';
+import { Textarea } from './ui/textarea';
+import { TiTickOutline } from "react-icons/ti";
 const ChatBox = () => {
-    const {selectedChat}=usemessage()
-    
-    
+    const { selectedChat } = useChat();
+    const { getallmessage, messages, sendmessage ,isMessageSend} = usemessage();
+    const { authUser, socket } = authstore();
+    const [typing, settyping] = useState(false);
+    const [input, setinput] = useState('');
+    const otherParticipant = selectedChat?.participants?.find(
+        (participant) => participant._id !== authUser._id,
+    );
+
+    useEffect(() => {
+        if (!socket) return;
+        socket.emit(chatEventEnum.JOIN_CHAT_EVENT, selectedChat?._id);
+        socket.on(chatEventEnum.TYPING_EVENT, (chatid) => {
+            settyping(true);
+        });
+        socket.on(chatEventEnum.STOP_TYPING_EVENT, () => {
+            settyping(false);
+        });
+        socket.on(chatEventEnum.MESSAGE_RECEIVED_EVENT, (newMessage) => {
+            console.log('new message', newMessage);
+            usemessage.setState((state) => ({
+                messages: [...state.messages, newMessage],
+            }));
+        });
+
+        return () => {
+            socket.off(chatEventEnum.TYPING_EVENT);
+            socket.off(chatEventEnum.STOP_TYPING_EVENT);
+            socket.off(chatEventEnum.MESSAGE_RECEIVED_EVENT);
+        };
+    }, [socket, selectedChat]);
+
+    /* The above code is using the `useEffect` hook in React to perform a side effect. It logs "apical" to
+the console and then calls the `getallmessage` function with the `selectedChat?._id` as a parameter.
+The `useEffect` hook will run this code block whenever the `selectedChat?._id` value changes. */
+
+    useEffect(() => {
+        console.log('apical');
+        getallmessage(selectedChat?._id);
+    }, [selectedChat?._id]);
+
+    const typingTimeoutRef = useRef(null); // Use ref to prevent re-renders
+
+    /* The above code is a React function component that defines a `handleTyping` function using the
+    `useCallback` hook. This function emits a `TYPING_EVENT` socket event with the `selectedChat`'s
+    ID when called. It also sets a timeout to emit a `STOP_TYPING_EVENT` socket event after 500
+    milliseconds if the user stops typing before that time. The `socket` and `selectedChat`
+    variables are dependencies for the `useCallback` hook. */
+    const handleTyping = useCallback(() => {
+        socket.emit(chatEventEnum.TYPING_EVENT, selectedChat?._id);
+
+        // Clear previous timeout
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+        // Set new timeout
+        typingTimeoutRef.current = setTimeout(() => {
+            socket.emit(chatEventEnum.STOP_TYPING_EVENT, selectedChat?._id);
+        }, 500);
+    }, [socket, selectedChat]);
+
+    const tabs = ['Overview', 'media', 'files', 'group'];
+    const handelsendmessage = () => {
+        if (!input.trim()) return;
+
+        const newMessage = {
+            content: input,
+            sender: { _id: authUser?._id },
+        };
+        sendmessage(selectedChat?._id, newMessage);
+        usemessage.setState((state) => ({
+            messages: [...state.messages, newMessage],
+        }));
+
+        setinput('');
+    };
+
+    const handelkeydownsendmessage = (e) => {
+        if (!input.trim()) return;
+        setinput((prev) => {});
+        if (e.key === 'Enter') {
+            const newMessage = {
+                content: input,
+                sender: { _id: authUser?._id },
+            };
+            sendmessage(selectedChat?._id, newMessage);
+            usemessage.setState((state) => ({
+                messages: [...state.messages, newMessage],
+            }));
+            setinput('');
+        }
+    };
+    const scrollRef = useRef(null);
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
+
     return (
         <>
             <Card className="h-full m-0 rounded-none border-none bg-slate-800 p-0 ">
-                {selectedChat?<CardContent className="h-full px-0  pb-10 w-full">
-                    <CardHeader className="bg-gray-950">
-                        <div className="px-0 grid grid-cols-2 pt-1   ">
-                            <div className="flex gap-3 justify-start ">
-                                <div><img src={selectedChat.profilePic?.url} alt="" className='w-7 h-7 rounded-full' /></div>
-                                <h2 className='text-white'>{selectedChat.name}</h2>
+                {selectedChat ? (
+                    <CardContent className="h-full px-0  pb-10 w-full">
+                        <CardHeader className="bg-gray-950">
+                            <div className="px-0 grid grid-cols-2 pt-1   ">
+                                <div className="flex gap-1 justify-start items-center ">
+                                    <div className="">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <img
+                                                    src={otherParticipant?.profilePic?.url}
+                                                    alt=""
+                                                    className="w-10 h-10 rounded-full"
+                                                />
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="p-0 ">
+                                                <Tabs
+                                                    className="flex  bg-gray-950 w-96 h-96 "
+                                                    defaultValue="Overview"
+                                                >
+                                                    <TabsList className="flex flex-col items-start px-3 w-1/3 gap-y-2 mt-16 bg-gray-950 text-white">
+                                                        {tabs.map((tab) => (
+                                                            <TabsTrigger key={tab} value={tab}>
+                                                                {tab}
+                                                            </TabsTrigger>
+                                                        ))}
+                                                    </TabsList>
+                                                    <Separator orientation="vertical" />
+                                                    <div className="w-2/3 bg-gray-800 text-white">
+                                                        {tabs.map((tab) => (
+                                                            <TabsContent key={tab} value={tab}>
+                                                                <Card className="m-0 p-0 bg-transparent rounded-none border-none">
+                                                                    <ScrollArea className="h-96">
+                                                                        <CardHeader className=" flex flex-col items-center text-white">
+                                                                            <img
+                                                                                src={
+                                                                                    otherParticipant
+                                                                                        ?.profilePic
+                                                                                        ?.url
+                                                                                }
+                                                                                className="h-32 w-32 rounded-full p-0"
+                                                                            />
+                                                                            <span>
+                                                                                {String(
+                                                                                    otherParticipant?.name,
+                                                                                )
+                                                                                    .trim()
+                                                                                    .toUpperCase()}
+                                                                            </span>
+                                                                            <span>
+                                                                                ~
+                                                                                {String(
+                                                                                    otherParticipant?.username,
+                                                                                )
+                                                                                    .trim()
+                                                                                    .toLowerCase()}
+                                                                                ~
+                                                                            </span>
+                                                                            <CardContent className="flex justify-center items-center gap-2 aspect-auto object-cover ">
+                                                                                <CardDescription className="p-4 w-24 flex justify-center items-center rounded-md bg-gray-950">
+                                                                                    <FaVideo />
+                                                                                </CardDescription>
+                                                                                <CardDescription className="p-4 w-24 flex justify-center items-center rounded-md bg-gray-950">
+                                                                                    <FaPhone />
+                                                                                </CardDescription>
+                                                                            </CardContent>
+                                                                        </CardHeader>
+                                                                        <CardContent className="text-white flex flex-col ">
+                                                                            <span className="font-semibold">
+                                                                                About
+                                                                            </span>
+                                                                            <span>
+                                                                                {
+                                                                                    otherParticipant?.about
+                                                                                }
+                                                                            </span>
+                                                                            <span className="font-semibold">
+                                                                                Phone No
+                                                                            </span>
+                                                                            <span>
+                                                                                {
+                                                                                    otherParticipant?.phoneNo
+                                                                                }
+                                                                            </span>
+                                                                        </CardContent>
+                                                                    </ScrollArea>
+                                                                </Card>
+                                                            </TabsContent>
+                                                        ))}
+                                                    </div>
+                                                </Tabs>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                    <span className="flex flex-col gap-0 ">
+                                        <h2 className="text-white fixed transfrom -translate-y-5 ">
+                                            {otherParticipant.name}
+                                        </h2>
+                                        <span className=" text-xs p-0 px-1 fixed  translate-y-0 text-emerald-500">
+                                            {typing ? (
+                                                <>
+                                                    typing
+                                                    <span className="animate-pulse"> . . .</span>
+                                                </>
+                                            ) : (
+                                                ' '
+                                            )}
+                                        </span>
+                                    </span>
+                                </div>
+                                <div className="flex  justify-end pt-0 ">
+                                    <Button className="bg-transparent hover:bg-slate-300 border-none rounded-full shadow-none">
+                                        <Phone />
+                                    </Button>
+                                    <Button className="bg-transparent  hover:bg-slate-300 border-none rounded-full shadow-none">
+                                        <Search />
+                                    </Button>
+                                    <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none">
+                                        <EllipsisVertical />
+                                    </Button>
+                                </div>
                             </div>
-                            <div className="flex  justify-end pt-0 ">
-                                <Button className="bg-transparent hover:bg-slate-300 border-none rounded-full shadow-none">
-                                    <Phone />
-                                </Button>
-                                <Button className="bg-transparent  hover:bg-slate-300 border-none rounded-full shadow-none">
-                                    <Search />
-                                </Button>
-                                <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none">
-                                    <EllipsisVertical />
-                                </Button>
-                            </div>
+                        </CardHeader>
+
+                        <CardDescription className="bg-slate-600 h-5/6">
+                            <ScrollArea className="h-full flex flex-col gap-4 p-4 ">
+                                {messages?.map((msg, index) => {
+                                    const isSender = msg?.sender?._id !== authUser?._id;
+
+                                    return (
+                                        
+                                        <>
+
+                                        <div
+                                            key={index}
+                                            className={`flex  items-center w-full ${isSender ? 'justify-start' : 'justify-end'} `}
+                                            >
+                                            {isSender && (
+                                                <img
+                                                    src={msg?.sender?.profilePic?.url}
+                                                    className="w-6 h-6 rounded-full m-2"
+                                                />
+                                            )}
+                                            
+                                            <div
+                                                className={`p-2 mt-2 rounded-lg shadow-md max-w-xs break-words ${
+                                                    isSender
+                                                        ? 'bg-blue-500 text-white'
+                                                        : 'bg-gray-200 text-black'
+                                                }`}
+                                                ref={scrollRef}
+                                            >
+                                                <span className='flex items-center gap-x-2'>
+
+                                                {msg.content}
+                                                {/* {isMessageSend?<TiTickOutline  />:<Timer/>} */}
+                                                </span>
+                                            </div>
+                                            {!isSender && (
+                                                <img
+                                                    src={authUser.profilePic?.url}
+                                                    className="w-6 h-6 rounded-full m-2"
+                                                />
+                                            )}
+                                        </div>
+
+                                        {typing && (
+                                            
+    <div
+        ref={scrollRef}
+        className="flex items-center gap-2 mt-4 "
+    >
+        <div className="bg-gray-300 p-2 px-4 rounded-lg text-black ">
+            Typing <span className="animate-pulse "><><span className='animate-bounce'>.</span>.<span className='animate-bounce'>.</span> </></span>
+        </div>
+    </div>
+)}
+                                        </>
+                                    );
+                                })}
+
+                            </ScrollArea>
+                        </CardDescription>
+
+                    
+                        <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-4  ">
+                            {/* <div className='flex'> */}
+                            <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none text-6xl">
+                                <Plus />
+                            </Button>
+
+                            <Input
+                                type="text"
+                                className="h-10 text-white"
+                                placeholder="type a message"
+                                onChange={(e) => {
+                                    setinput(e.target.value);
+                                    handleTyping();
+                                }}
+                                value={input}
+                                onKeyPress={handelkeydownsendmessage}
+                            />
+                            <Button
+                                className="bg-white text-black hover:bg-green-700 hover:text-white "
+                                onClick={handelsendmessage}
+                            >
+                                <SendHorizontal size={24} />
+                            </Button>
+                            {/* </div> */}
+                        </CardFooter>
+                    </CardContent>
+                ) : (
+                    <CardContent className="flex justify-center items-center h-full">
+                        <div className="flex flex-col items-center">
+                            <FaWhatsapp size={75} color="white" />
+                            <span className="text-3xl text-white font-medium">
+                                welcome to whatsApp Web
+                            </span>
+                            <span className="text-gray-400">
+                                Send and receive messages online without keeping your phone online
+                            </span>
                         </div>
-                    </CardHeader>
-
-                    <CardDescription className="bg-slate-600 h-5/6">
-                        <ScrollArea className="h-full">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aperiam magnam
-                            laboriosam facilis beatae neque porro itaque in velit fuga distinctio,
-                            modi, placeat perferendis assumenda vel et sapiente, numquam corrupti
-                            iure. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                            Repudiandae repellat a fuga minima, dolores cumque cupiditate ipsum.
-                            Eos, eaque. Laudantium doloremque voluptas a asperiores fugit error
-                            deleniti repudiandae sunt repellat minus, ex reprehenderit sit quod
-                            voluptate architecto. Libero deleniti dolore sit esse eum vel numquam,
-                            minima cum tempora, atque placeat quisquam, ad consequuntur ea sed
-                            dolorum! Excepturi magnam modi, pariatur deserunt tempora eum
-                            exercitationem voluptates, nisi consequatur rerum ea eius doloremque
-                            fugit commodi! Reiciendis veritatis neque delectus veniam inventore
-                            facere dolorum ex odio sed qui pariatur quam id voluptatibus, fugiat
-                            quaerat labore soluta nemo cumque earum temporibus porro architecto
-                            tempora! Numquam, velit doloremque. Cupiditate consequuntur ad commodi
-                            quos omnis sint in! Possimus sunt iure repellendus. Debitis ipsam a
-                            recusandae ipsum assumenda quasi ut vero. Sunt tempore quod ea enim
-                            libero eius eaque vel minima numquam eos dicta, temporibus explicabo
-                            quidem mollitia deleniti voluptatem sed laborum architecto. Eos quis,
-                            quam qui neque ea praesentium veritatis dolorum ab minus impedit?
-                            Tempora, dolores. Consectetur velit maxime unde doloremque atque,
-                            laborum voluptatibus modi similique autem dolor quam, tempora, error
-                            sint dignissimos illum tenetur fuga in! Deserunt tempore ipsum debitis
-                            dignissimos enim illum ea, quisquam culpa beatae quam voluptates.
-                            Sapiente numquam adipisci esse iure modi labore fugiat ab nostrum magnam
-                            tempora, quia, molestiae expedita. Vitae, non? Explicabo, velit placeat
-                            sapiente minima amet quasi pariatur saepe veniam cumque, non, quam odit.
-                            Tempora dignissimos fuga accusamus vitae quidem aspernatur blanditiis
-                            maxime quod reprehenderit excepturi beatae, officia, assumenda error
-                            praesentium nihil, quia est dolorum odit? Eius sequi aliquam similique
-                            qui doloremque odio quis necessitatibus autem eligendi quo eum veniam
-                            accusantium, neque consequatur doloribus, nemo soluta nam fugit? Cum,
-                            excepturi doloremque sapiente sed autem eos laboriosam fugiat beatae
-                            error ad veniam temporibus! Delectus reprehenderit officiis ipsam,
-                            soluta itaque saepe eligendi molestiae, necessitatibus facilis minima
-                            magnam quam quidem quo et iste corrupti aliquid excepturi sunt unde sit
-                            numquam dicta? Nemo perferendis repudiandae a esse, quia nobis cumque
-                            consequuntur ad explicabo voluptatum, quisquam fugit voluptates debitis
-                            enim possimus magni unde natus, voluptatibus voluptate! Laudantium quae
-                            enim minima dolore, fugit, illum, est dolores illo sint veniam
-                            blanditiis eos voluptas maiores aspernatur commodi eum architecto aut
-                            facere. Ducimus perferendis magni voluptas. Veritatis repellendus quo
-                            delectus possimus quisquam vero recusandae accusantium ipsa voluptatibus
-                            rerum sed est sequi eos hic aliquid eum id libero consequuntur
-                            consectetur voluptate quod, placeat deleniti! Deserunt mollitia dolorem
-                            molestias in voluptas corrupti amet repellendus cum natus est ex
-                            voluptatum quos esse dolore nesciunt pariatur assumenda, dolor enim,
-                            cumque reiciendis nulla soluta laudantium voluptate. Asperiores ratione
-                            repellat consequuntur eius placeat in eaque praesentium modi aspernatur
-                            doloremque, unde totam a autem ex! Dolorem similique qui vero
-                            perspiciatis laudantium, laboriosam tempore ab, id illo ratione
-                            doloremque neque dolore impedit dolorum et eaque enim earum velit ut cum
-                            reiciendis a inventore! Sapiente quia cumque blanditiis commodi sit eius
-                            obcaecati, placeat enim dolor nemo veniam possimus. Eveniet vel officia
-                            aut cupiditate, impedit laudantium cumque, dolor laboriosam illum atque,
-                            delectus obcaecati itaque provident officiis blanditiis optio
-                            repudiandae exercitationem incidunt aperiam eum necessitatibus quam.
-                            Itaque, neque rem? Lorem ipsum dolor, sit amet consectetur adipisicing
-                            elit. Laudantium commodi error officiis eum, quia quidem est aliquam
-                            laboriosam doloribus reiciendis, harum necessitatibus temporibus minus
-                            voluptate a natus consequatur ullam ex.
-                        </ScrollArea>
-                    </CardDescription>
-
-                    <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-2  ">
-                        {/* <div className='flex'> */}
-                        <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none text-6xl">
-                            <Plus />
-                        </Button>
-
-                        <Input
-                            type="text"
-                            className="h-10 text-white"
-                            placeholder="type a message"
-                        />
-                        <Button className="bg-white text-black hover:bg-green-700 hover:text-white ">
-                            <SendHorizontal size={24} />
-                        </Button>
-                        {/* </div> */}
-                    </CardFooter>
-                </CardContent> :<CardContent className="flex justify-center items-center h-full">
-                    <div className='flex flex-col items-center'>
-
-                <FaWhatsapp size={75} color="white"/>
-                <span className='text-3xl text-white font-medium'>
-                    welcome to whatsApp Web
-                </span>
-                <span className='text-gray-400'>Send and receive messages online without keeping your phone online</span>
-                    </div>
-                </CardContent>}
+                    </CardContent>
+                )}
             </Card>
         </>
     );

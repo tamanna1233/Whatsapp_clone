@@ -1,187 +1,162 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader } from './ui/card';
 import { FaPenToSquare } from 'react-icons/fa6';
 import { Input } from './ui/input';
-import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-import { DropdownMenuItem } from './ui/dropdown-menu';
-import { usemessage } from '@/store/messagestore';
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { useChat } from '@/store/chatStore';
+import { authstore } from '@/store/authstore';
+import { chatEventEnum } from '@/constants';
 
-const Chats_idebar = () => {
-    const { isAvialableChats, avialablechats, setSelectedChat, selectedChat } = usemessage();
-   /**
-    * The function `handleAvailableChat` calls the `avialablechats` function asynchronously.
-    */
+const ChatsSidebar = () => {
+    const {
+        availableChats,
+        avialablechats,
+        setSelectedChat,
+        selectedChat,
+        createorGetOneOnOneChat,
+        getyourChats,
+        previousChats,
+        setpreviousChats,
+    } = useChat();
+
+    const { socket, connectSocket, authUser } = authstore(); // Get current user
+    const [chat, setChat] = useState(previousChats||[]);
+    const [typing, setTyping] = useState(false);
+    const [typingchatId, setTypingChatId] = useState(null);
+ const [unreadchat,setunreadchat]=useState()
+    useEffect(() => {
+        setChat(previousChats); // Update chat state when previousChats changes
+    }, [previousChats]);
+
     const handleAvailableChat = async () => {
-        avialablechats();
-    };
-   /**
-    * The function `handelselectedChat` sets the selected chat data asynchronously.
-    */
-    const handelselectedChat = async (data) => {
-        console.log(data)
-        setSelectedChat(data);
+        await avialablechats();
     };
 
-    console.log("selected chat",selectedChat)
-   /* dummy data
-   The above code is defining an array of chat objects. Each chat object contains properties such as
-   _id, name, lastMessage, time, and profilePic. These objects represent chat conversations with
-   different users, including their names, last messages, timestamps, and profile pictures. */
-    const chats = [
-        {
-            _id: 1,
-            name: 'John Doe',
-            lastMessage: 'Hey, how are you?',
-            time: '10:30 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=1 '},
-        },
-        {
-            _id: 2,
-            name: 'Jane Smith',
-            lastMessage: 'See you later!',
-            time: '09:45 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=2 '},
-        },
-        {
-            _id: 3,
-            name: 'Alex Brown',
-            lastMessage: 'Let’s catch up soon.',
-            time: '08:15 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=3 '},
-        },
-        {
-            _id: 4,
-            name: 'Emily Clark',
-            lastMessage: 'D_id you get the documents?',
-            time: 'Yesterday',
-            profilePic: {url:'https://i.pravatar.cc/40?img=4 '},
-        },
-        {
-            _id: 5,
-            name: 'Michael Lee',
-            lastMessage: 'I’ll call you back in 10 minutes.',
-            time: 'Yesterday',
-            profilePic: {url:'https://i.pravatar.cc/40?img=5 '},
-        },
-        {
-            _id: 6,
-            name: 'John Doe',
-            lastMessage: 'Hey, how are you?',
-            time: '10:30 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=6 '},
-        },
-        {
-            _id: 7,
-            name: 'Jane Smith',
-            lastMessage: 'See you later!',
-            time: '09:45 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=7 '},
-        },
-        {
-            _id: 8,
-            name: 'Alex Brown',
-            lastMessage: 'Let’s catch up soon.',
-            time: '08:15 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=8 '},
-        },
-        {
-            _id: 9,
-            name: 'Emily Clark',
-            lastMessage: 'D_id you get the documents?',
-            time: 'Yesterday',
-            profilePic: {url:'https://i.pravatar.cc/40?img=9 '},
-        },
-        {
-            _id: 10,
-            name: 'Michael Lee',
-            lastMessage: 'I’ll call you back in 10 minutes.',
-            time: 'Yesterday',
-            profilePic: {url:'https://i.pravatar.cc/40?img=10 '},
-        },
-        {
-            _id: 11,
-            name: 'John Doe',
-            lastMessage: 'Hey, how are you?',
-            time: '10:30 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=11 '},
-        },
-        {
-            _id: 12,
-            name: 'Jane Smith',
-            lastMessage: 'See you later!',
-            time: '09:45 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=12 '},
-        },
-        {
-            _id: 13,
-            name: 'Alex Brown',
-            lastMessage: 'Let’s catch up soon.',
-            time: '08:15 AM',
-            profilePic: {url:'https://i.pravatar.cc/40?img=13 '},
-        },
-        {
-            _id: 14,
-            name: 'Emily Clark',
-            lastMessage: 'D_id you get the documents?',
-            time: 'Yesterday',
-            profilePic: {url:'https://i.pravatar.cc/40?img=14 '},
-        },
-        {
-            _id: 15,
-            name: 'Michael Lee',
-            lastMessage: 'I’ll call you back in 10 minutes.',
-            time: 'Yesterday',
-            profilePic: {url:'https://i.pravatar.cc/40?img=15 '},
-        },
-    ];
+    const handleSelectedChat = async (chatId) => {
+        await createorGetOneOnOneChat(chatId);
+        setunreadchat((prev) => ({
+            ...prev,
+            [chatId]: 0,
+        }));
+    };
+
+    // Handle typing events
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on(chatEventEnum.TYPING_EVENT, (chatId) => {
+            if (selectedChat?._id === chatId) return;
+            setTypingChatId(chatId);
+            setTyping(true);
+        });
+
+        socket.on(chatEventEnum.STOP_TYPING_EVENT, () => {
+            setTyping(false);
+            setTypingChatId(null);
+        });
+
+        socket.on(chatEventEnum.MESSAGE_RECEIVED_EVENT, (newMessage) => {
+            setChat((prevChats) =>
+                prevChats.map((chat) =>
+                    chat._id === newMessage.chat
+                        ? { ...chat, lastmessage: { content: newMessage.content } }
+                        : chat,
+                ),
+            );
+            setunreadchat((prev = []) => {
+                if (selectedChat?._id === newMessage.chat) return prev; // Ignore if chat is open
+                return {
+                    ...prev,
+                    [newMessage.chat]: (prev[newMessage.chat] ? prev[newMessage.chat] + 1 : 1), // Ensure correct increment
+                };
+            });
+        });
+
+    
+
+        return () => {
+            socket.off(chatEventEnum.TYPING_EVENT);
+            socket.off(chatEventEnum.STOP_TYPING_EVENT);
+            socket.off(chatEventEnum.MESSAGE_RECEIVED_EVENT);
+        };
+    }, [socket, selectedChat]);
+
+    useEffect(() => {
+        getyourChats();
+    }, []);
+
+    useEffect(() => {
+        if (!socket) {
+            connectSocket();
+            return;
+        }
+
+        if (chat.length > 0) {
+            chat.forEach((chat) => {
+                socket.emit(chatEventEnum.JOIN_CHAT_EVENT, chat._id);
+            });
+        }
+
+        socket.on(chatEventEnum.CONNECTED_EVENT, () => {
+            console.log('Connected to socket');
+        });
+
+        socket.on(chatEventEnum.NEW_CHAT_EVENT, (chat) => {
+            setpreviousChats((prev) => [...prev, chat]);
+        });
+
+        return () => {
+            socket.off(chatEventEnum.CONNECTED_EVENT);
+            socket.off(chatEventEnum.NEW_CHAT_EVENT);
+        };
+    }, [socket, connectSocket, chat]);
+
+    console.log(unreadchat);
     return (
-        <Card className="min-h-screen rounded-none bg-gray-950 p-0 m-0 border-none shadow-none ">
-            <CardContent className="p-0 ">
+        <Card className="min-h-screen rounded-none bg-gray-950 p-0 m-0 border-none shadow-none">
+            <CardContent className="p-0">
                 <CardHeader className="p-0 mb-4">
                     <div className="flex justify-between items-center text-xl text-white p-2 mt-4">
                         <span>Chats</span>
-                        <DropdownMenu
-                            className=""
-                            onOpenChange={(open) => {
-                                if (open) {
-                                    console.log('Dropdown opened');
-                                    handleAvailableChat();
-                                }
-                            }}
-                        >
+                        <DropdownMenu onOpenChange={(open) => open && handleAvailableChat()}>
                             <DropdownMenuTrigger asChild>
                                 <FaPenToSquare />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="bg-black h-96 w-72 mt-5 backdrop-blur-md z-50 rounded-md">
-                                <ScrollArea className="h-96 ">
-                                    {isAvialableChats.length > 0 &&
-                                        isAvialableChats.map((chat) => (
-                                            <div key={chat._id} className="py-2 text-white  ">
+                            <DropdownMenuContent className="bg-black py-8 w-72 mt-5 backdrop-blur-md z-50 rounded-md px-4">
+                                <DropdownMenuItem className="flex justify-center text-whitetext-center">
+                                    Create Group
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <ScrollArea className="h-96">
+                                    {availableChats?.length > 0 &&
+                                        availableChats?.map((chat) => (
+                                            <div key={chat?._id} className="py-2 text-white">
                                                 <DropdownMenuItem
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        handelselectedChat(chat);
+                                                        handleSelectedChat(chat?._id);
                                                     }}
-                                                    className=" hover:bg-gray-700 "
+                                                    className="hover:bg-gray-700"
                                                 >
                                                     <div className="flex justify-between items-center gap-2">
                                                         <img
-                                                            src={chat.profilePic?.url}
+                                                            src={chat?.profilePic?.url}
                                                             alt=""
                                                             className="w-10 h-10 rounded-full object-cover mr-3"
                                                         />
                                                         <div className="flex flex-col">
                                                             <span className="font-semibold">
-                                                                {chat.name}
+                                                                {chat?.name}
                                                             </span>
                                                             <span className="text-gray-500 font-medium">
-                                                                {chat.about}
+                                                                {chat?.about}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -193,37 +168,71 @@ const Chats_idebar = () => {
                         </DropdownMenu>
                     </div>
                     <div className="px-3">
-                        <Input placeholder="search chat" />
+                        <Input placeholder="Search Chat" />
                     </div>
-                    {/* <Separator className="mt-2" /> */}
                 </CardHeader>
                 <CardDescription className="h-screen">
-                    <ScrollArea className=" h-5/6">
+                    <ScrollArea className="h-5/6">
                         <div className="space-y-2">
-                            {chats.map((chat) => (
-                                <div
-                                    key={chat._id}
-                                    className="p-2 px-4 text-white hover:bg-gray-800 rounded-md cursor-pointer"
-                                    onClick={(e)=>{e.preventDefault() ;handelselectedChat(chat)}}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <img
-                                                src={chat.profilePic?.url}
-                                                alt={chat.name}
-                                                className="w-10 h-10 rounded-full object-cover mr-3"
-                                            />
-                                            <div>
-                                                <span className="font-semibold">{chat.name}</span>
-                                                <p className="text-sm text-gray-300">
-                                                    {chat.lastMessage}
-                                                </p>
+                            {chat?.map((chatItem) => {
+                                // Find the correct participant (not the logged-in user)
+                                const otherParticipant = chatItem?.participants?.find(
+                                    (participant) => participant?._id !== authUser?._id,
+                                );
+
+                                return (
+                                    <div
+                                        key={chatItem._id}
+                                        className="p-2 px-4 text-white hover:bg-gray-800 rounded-md cursor-pointer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setSelectedChat(chatItem);
+                                            setunreadchat((prev) => ({
+                                                ...prev,
+                                                [chatItem._id]: 0,
+                                            }))
+                                        }}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center">
+                                                <img
+                                                    src={otherParticipant?.profilePic?.url}
+                                                    alt={otherParticipant?.name}
+                                                    className="w-10 h-10 rounded-full object-cover mr-3"
+                                                />
+                                                <div>
+                                                    <span className="font-semibold">
+                                                        {otherParticipant?.name}
+                                                    </span>
+                                                    <p className="text-sm text-emerald-500">
+                                                        {typingchatId === chatItem._id && typing ? (
+                                                            <span className="">
+                                                                typing
+                                                                <span className="animate-pulse">
+                                                                    ...
+                                                                </span>
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-white">
+                                                                {chatItem.lastmessage?.content ||
+                                                                    'no message'}
+                                                            </span>
+                                                        )}
+                                                    </p>
+                                                </div>
                                             </div>
+                                            <span className="text-sm text-gray-400">
+                                                {chatItem?.lastmessage?.createdAt? new Date(chatItem.lastmessage?.createdAt ).toLocaleDateString(): " "}
+                                            </span>
+                                            {unreadchat?.[chatItem._id] > 0 && (
+                <span className="bg-emerald-500 text-white text-sm font-normal  h-4 w-4 shadow-md  rounded-full flex items-center justify-center">
+                    {unreadchat?.[chatItem._id]}
+                </span>
+            )}
                                         </div>
-                                        <span className="text-sm text-gray-400">{chat.time}</span>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </ScrollArea>
                 </CardDescription>
@@ -232,4 +241,4 @@ const Chats_idebar = () => {
     );
 };
 
-export default Chats_idebar;
+export default ChatsSidebar;

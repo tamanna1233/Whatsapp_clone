@@ -14,9 +14,9 @@ const messageSchema = new Schema(
             required: true,
         },
         attachment: {
-            type: {
+            type: [{
                 fileurl: String,
-            },
+            }],
             default: [],
         },
         chat: {

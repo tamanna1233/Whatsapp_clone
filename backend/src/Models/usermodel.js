@@ -46,13 +46,17 @@ const userSchema = new Schema(
             required: [true, 'password is required'],
         },
         profilePic: {
-            type: {
-                url: String,
-                public_id: String,
+            url: {
+                type: String,
+                default:
+                    'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7',
             },
-            default:
-                'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+            public_id: {
+                type: String,
+                default: null, // Optional
+            },
         },
+        
         refreshToken: {
             type: String,
         },

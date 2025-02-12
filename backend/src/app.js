@@ -17,6 +17,16 @@ const io = new Server(server, {
         credentials: true,
     },
 });
+ io.use((socket, next) => {
+           const emitOriginal = socket.emit;
+         
+           socket.emit = function (...args) {
+               console.log('Event emitted:', args[0], 'Payload:', args[1]);
+               emitOriginal.apply(socket, args);
+           };
+           next();
+       });
+
 instalizeSocket(io);
 /* The line `const morganFormat = ":method :url :status :response-time ms";` is defining a format
 string that specifies how the logging information should be structured when using the Morgan
@@ -33,28 +43,30 @@ app.use(express.static('public'));
 app.use(cookieParser());
 /* This code snippet is setting up logging using the Morgan middleware in the Express server. Here's a
 breakdown of what it does: */
-app.use(
-    morgan(morganFormat, {
-        stream: {
-            write: (message) => {
-                const logObject = {
-                    method: message.split(' ')[0],
-                    url: message.split(' ')[1],
-                    status: message.split(' ')[2],
-                    responseTime: message.split(' ')[3],
-                };
-                logger.info(JSON.stringify(logObject));
-            },
-        },
-    }),
-);
+// app.use(
+//     morgan(morganFormat, {
+//         stream: {
+//             write: (message) => {
+//                 const logObject = {
+//                     method: message.split(' ')[0],
+//                     url: message.split(' ')[1],
+//                     status: message.split(' ')[2],
+//                     responseTime: message.split(' ')[3],
+//                 };
+//                 logger.info(JSON.stringify(logObject));
+//             },
+//         },
+//     }),
+// );
 
 /* The code snippet `import userRouter from "./router/user.routes.js"` is importing a router module
 from the file `user.routes.js` located in the `router` directory. */
 
 import userRouter from './router/user.routes.js';
-import messageRouter from './router/message.routes.js';
-
+import chatRouter from './router/chat.routes.js';
+import messageRouter from "./router/message.routes.js"
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/chat', chatRouter);
 app.use('/api/v1/message', messageRouter);
+
 export default server;
