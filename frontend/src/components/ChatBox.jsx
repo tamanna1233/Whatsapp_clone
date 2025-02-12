@@ -307,6 +307,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                             </ScrollArea>
                         </CardDescription>
 
+                    
                         <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-4  ">
                             {/* <div className='flex'> */}
                             <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none text-6xl">
