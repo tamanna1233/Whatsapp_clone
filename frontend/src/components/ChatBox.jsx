@@ -294,6 +294,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
         ref={scrollRef}
         className="flex items-center gap-2 mt-4 "
     >
+    <img src={msg?.sender?.profilePic?.url} className='w-6 h-6 rounded-full'/>
         <div className="bg-gray-300 p-2 px-4 rounded-lg text-black ">
             Typing <span className="animate-pulse "><><span className='animate-bounce'>.</span>.<span className='animate-bounce'>.</span> </></span>
         </div>
