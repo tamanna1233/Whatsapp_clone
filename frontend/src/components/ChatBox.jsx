@@ -104,7 +104,7 @@ const ChatBox = () => {
                         </ScrollArea>
                     </CardDescription>
 
-                    <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-4  ">
+                    <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-2  ">
                         {/* <div className='flex'> */}
                         <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none text-6xl">
                             <Plus />

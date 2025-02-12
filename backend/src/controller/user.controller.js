@@ -117,5 +117,32 @@ parameters. */
 const currentUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new apiResponse(200, req.user, 'current user'));
 });
+// update profile
+const updateProfile = asyncHandler(async (req,res) => {
+const {name, phoneNo, email, username}= req.body
+    const { _id }= req.user
+ const user = await User.findById(_id);
+ if(!user){
+    return res.status(404).json(new apiResponse(404, 'user not found'))
+ }
+ const updateUser = await User.findByIdAndUpdate(_id,{name,phoneNo,email,username},{
+    new:true
+ })
+ if(!updateUser){
+   throw new apiResponse(404, 'something went wrong')
+ }
+ return res.status(200).json(new apiResponse(200, updateUser, 'user updated successfully'))
+})
 
-export { register, login, logout, currentUser };
+// delete user
+const deleteUser = asyncHandler(async(req,res)=>{
+    const {_id} =req.user
+    const user = await User.findByIdAndDelete(_id)
+    if(!user){
+
+        throw new apiError(400,"user not found ")
+    }
+    return res.status(200).json(new apiResponse(200,'delete sucessfully'))
+})
+
+export { register, login, logout, currentUser,updateProfile ,deleteUser};
