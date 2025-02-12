@@ -135,7 +135,7 @@ if(!recivedmessage){
 
 chat.participants.forEach((participants)=>{
     if(participants._id.toString()===req.user._id.toString()) return
-    emitSocketEvent(req,participants.toString(),chatEventEnum.MESSAGE_RECEIVED_EVENT,recivedmessage)
+    emitSocketEvent(req,chat._id.toString(),chatEventEnum.MESSAGE_RECEIVED_EVENT,recivedmessage)
 })
 
 return res.status(200).json(new apiResponse(200,recivedmessage,"message recived sucessfully"))
