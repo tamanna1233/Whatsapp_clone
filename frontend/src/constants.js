@@ -19,4 +19,5 @@ export const chatEventEnum = Object.freeze({
     // ? when participant starts typing
     TYPING_EVENT: 'typing',
     // ? when message is deleted
-    MESSAGE_DELETE_EVENT: 'messageDeleted',})
+    MESSAGE_DELETE_EVENT: 'messageDeleted',
+});

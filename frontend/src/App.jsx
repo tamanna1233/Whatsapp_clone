@@ -8,15 +8,14 @@ import { chatEventEnum } from './constants';
 function App() {
     const { checkCurrentUser, authUser, socket } = authstore();
 
-    const checkUser = useCallback(async() => {
-       await checkCurrentUser();
+    const checkUser = useCallback(async () => {
+        await checkCurrentUser();
     }, [checkCurrentUser]);
 
     useEffect(() => {
         checkUser();
-       if(!socket)return
+        if (!socket) return;
     }, [checkUser]); // Removed `socket` from dependencies
-
 
     return (
         <div className="flex h-screen fixed w-screen font-serif">

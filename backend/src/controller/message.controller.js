@@ -27,7 +27,9 @@ const commonAggerigation=()=>{
                         $project:{
                             usename:1,
                             avatar:1,
-                            email:1
+                            email:1,
+                            profilePic:1
+                            
                         }
                     },
                     

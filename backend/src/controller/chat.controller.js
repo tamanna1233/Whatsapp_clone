@@ -69,7 +69,7 @@ const commonChatAggerigation = () => {
         },
         {
             $addFields: {
-                lastMessage: { $first: '$lastmessage' },
+                lastmessage: { $first: '$lastmessage' },
             },
         },
     ];

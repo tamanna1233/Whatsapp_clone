@@ -1,51 +1,22 @@
 import { axiosInstances } from '@/services/axios';
 import { create } from 'zustand';
-import { authstore } from './authstore';
 
-
-export const usemessage = create((set, get) => ({
-    
-    selectedChat: '',
-    setSelectedChat: (chatId) => set({ selectedChat: chatId }),
-    availableChats: [],
-    previousChats:[],
-setpreviousChats:(chat)=>set({previousChats:chat}),
-    avialablechats: async () => {
-        try {
-            const res = await axiosInstances.get('/chat/availablechats');
-            if (res.data.success) {
-                set({ availableChats: res.data.data });
-                
-            }
-        } catch (error) {
-            console.log('avaialable chats error', error.message);
+export const usemessage = create((set) => ({
+    messages: [],
+    isMessageSend:true,
+    getallmessage: async (chatId) => {
+        if (!chatId) return;
+        const res = await axiosInstances.get(`message/getallmessage/${chatId}`);
+        set((state) => ({
+            messages: Array.isArray(res.data.data) ? [...res.data.data].reverse() : state.messages,
+        }));
+    },
+    sendmessage: async (chatId, data) => {
+        if (!chatId) return;
+    set({isMessageSend:false})
+        const res = await axiosInstances.post(`message/sendmessage/${chatId}`, data);
+        if(res.data.success){
+            set({isMessageSend:true}) 
         }
     },
-   createorGetOneOnOneChat:async(data)=>{
-    try {
-        const res=await axiosInstances.get(`chat/createOrGetOneOnOneChat/${data}`)
-        if(res.data.success){
-            set({selectedChat:res.data.data})
-           
-        }
-    } catch (error) {
-        console.log("error while creating chat" ,error.message)
-    }
-   },
-   getyourChats:async()=>{
-    try {
-        const res=await axiosInstances.get("chat/getyourchat")
-        if(res.data.success){
-            
-            set({previousChats:res.data.data})
-        }
-        else{
-            console.log("error",res.data.data)
-        }
-    } catch (error) {
-       console.log("error",error.message) 
-    }
-
-   }
-
 }));

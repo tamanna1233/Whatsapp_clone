@@ -20,9 +20,6 @@ export const authstore = create((set, get) => ({
             const res = await axiosInstances.get('/users/currentuser');
             set({ authUser: res.data.data, isCheckingAuth: false });
             get().connectSocket();
-           
-
-            
         } catch (error) {
             console.error(`Error while checking auth: ${error.message}`);
             set({ authUser: null, isCheckingAuth: false });
@@ -87,19 +84,18 @@ export const authstore = create((set, get) => ({
     socket connection to a specified server. Here's a breakdown of what it does: */
     connectSocket: () => {
         const { authUser, socket } = get();
-        
-        if (!authUser || socket && socket?.connected) return;
-        
+
+        if (!authUser || (socket && socket?.connected)) return;
+
         // Create a new socket connection
         const newSocket = io('http://localhost:8000', { withCredentials: true });
-          
+
         console.log('Checking socket connection...');
         newSocket.on('connect', () => {
             console.log('Socket connected successfully');
             set({ socket: newSocket });
-            
         });
-       
+
         newSocket.on('disconnect', () => {
             console.log('Socket disconnected');
             set({ socket: null });
@@ -108,7 +104,7 @@ export const authstore = create((set, get) => ({
         newSocket.on('connect_error', (error) => {
             console.error('Socket connection error:', error);
         });
-        
+
         // // Save the new socket instance
         // set({ socket: newSocket });
     },
