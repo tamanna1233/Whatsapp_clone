@@ -28,7 +28,6 @@ const ChatBox = () => {
       const [typingchatId, setTypingChatId] = useState(null);
       const documentRef = useRef();
       const [file, setfile] = useState('');
-
       const otherParticipant = selectedChat?.participants?.find((participant) => participant._id !== authUser._id);
 
       /* The above code is a `useEffect` hook in a React component that is setting up event listeners for
@@ -93,6 +92,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                   content: input,
                   sender: { _id: authUser?._id },
                   attachment: [{ url: file }],
+                  chat:selectedChat?._id
             };
             sendmessage(selectedChat?._id, formdata);
             usemessage.setState((state) => ({
@@ -114,6 +114,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                         content: input,
                         sender: { _id: authUser?._id },
                         attachment: [{ url: file }],
+                        chat:selectedChat?._id
                   };
                   sendmessage(selectedChat?._id, formdata);
                   usemessage.setState((state) => ({
@@ -264,7 +265,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       ?.filter((msg) => msg.chat === selectedChat._id) // Filter messages first
                                                       .map((msg, index) => {
                                                             const isSender = msg?.sender?._id !== authUser?._id;
-
+                                                              
                                                             return (
                                                                   <>
                                                                         <div
@@ -287,7 +288,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     ref={scrollRef}
                                                                               >
                                                                                     <span className="flex flex-col items-start p-2 gap-x-2 gap-y-2 object-cover">
-                                                                                          {msg.attachment && (
+                                                                                          {msg?.attachment[0]?.url && (
                                                                                                 <img
                                                                                                       src={msg?.attachment[0]?.url}
                                                                                                       className={msg.attachment ? 'h-64 w-64' : ''}
@@ -305,14 +306,18 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                               )}
                                                                         </div>
 
-                                                                        {typing && (
+                                                                   
+                                                                  </>
+                                                            );
+                                                      })}
+                                                           {typing && (
                                                                               <div
                                                                                     ref={scrollRef}
                                                                                     className="flex items-center gap-2 mt-4 "
-                                                                                    key={index}
+                                                                                    
                                                                               >
                                                                                     <img
-                                                                                          src={msg?.sender?.profilePic?.url}
+                                                                                          src={otherParticipant?.profilePic?.url}
                                                                                           className="w-6 h-6 rounded-full"
                                                                                     />
                                                                                     <div className="bg-gray-300 p-2 px-4 rounded-lg text-black ">
@@ -326,19 +331,16 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     </div>
                                                                               </div>
                                                                         )}
-                                                                  </>
-                                                            );
-                                                      })}
                                           </ScrollArea>
                                     </CardDescription>
-                                    <CardContent className="absolute bottom-16">
-                                          {file && (
+                                    {file && (  <CardContent className="absolute bottom-16">
+                                         
                                                 <div className="bg-black p-8 rounded-md">
                                                       <img src={file} className="h-52 w-52 rounded-md object-scale-down" />
                                                       {input && <span className="text-white"> {input}</span>}
                                                 </div>
-                                          )}
                                     </CardContent>
+                                          )}
                                     <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-4  ">
                                           {/* <div className='flex'> */}
 
