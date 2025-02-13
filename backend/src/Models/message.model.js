@@ -11,11 +11,12 @@ const messageSchema = new Schema(
 
         content: {
             type: String,
-            required: true,
+            
         },
         attachment: {
             type: [{
-                fileurl: String,
+               url: String,
+               public_id:String
             }],
             default: [],
         },

@@ -99,14 +99,21 @@ if(!selectedChat){
     throw new apiError(400,"chat not exist")
 }
 const messagefile=[]
-if(req.files&& req.files.attachments.length>0){
-    req.files.attachments.map(async(atachment)=>{
-     const url=  await uploadOnCloudinary(atachment)
-     messagefile.push[url]
-
-    })
+if (req.files && req?.files?.attachments?.length > 0) {
+    for (const attachment of req.files.attachments) {
+        try {
+            const url = await uploadOnCloudinary(attachment.path);
+            if (url?.secure_url) {
+                messagefile.push({url:url.secure_url,
+                    public_id:url.public_id
+                });
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
+    }
+   
 }
-
 const message=await Message.create({
     sender:new mongoose.Types.ObjectId(req.user._id),
     content:content||"",
@@ -135,7 +142,7 @@ if(!recivedmessage){
 
 chat.participants.forEach((participants)=>{
     if(participants._id.toString()===req.user._id.toString()) return
-    emitSocketEvent(req,chat._id.toString(),chatEventEnum.MESSAGE_RECEIVED_EVENT,recivedmessage)
+    emitSocketEvent(req,participants.toString(),chatEventEnum.MESSAGE_RECEIVED_EVENT,recivedmessage)
 })
 
 return res.status(200).json(new apiResponse(200,recivedmessage,"message recived sucessfully"))
