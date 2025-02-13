@@ -7,8 +7,8 @@ import { router } from './router/router';
 import { Toaster } from './components/ui/toaster';
 
 createRoot(document.getElementById('root')).render(
-    <>
-        <Toaster />
-        <RouterProvider router={router}></RouterProvider>
-    </>,
+      <>
+            <Toaster />
+            <RouterProvider router={router}></RouterProvider>
+      </>,
 );

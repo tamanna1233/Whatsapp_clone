@@ -6,23 +6,23 @@ import { Outlet } from 'react-router';
 import { chatEventEnum } from './constants';
 
 function App() {
-    const { checkCurrentUser, authUser, socket } = authstore();
+      const { checkCurrentUser, authUser, socket } = authstore();
 
-    const checkUser = useCallback(async () => {
-        await checkCurrentUser();
-    }, [checkCurrentUser]);
+      const checkUser = useCallback(async () => {
+            await checkCurrentUser();
+      }, [checkCurrentUser]);
 
-    useEffect(() => {
-        checkUser();
-        if (!socket) return;
-    }, [checkUser]); // Removed `socket` from dependencies
+      useEffect(() => {
+            checkUser();
+            if (!socket) return;
+      }, [checkUser]); // Removed `socket` from dependencies
 
-    return (
-        <div className="flex h-screen fixed w-screen font-serif">
-            <AppSidebar />
-            <Outlet />
-        </div>
-    );
+      return (
+            <div className="flex h-screen fixed w-screen font-serif">
+                  <AppSidebar />
+                  <Outlet />
+            </div>
+      );
 }
 
 export default App;
