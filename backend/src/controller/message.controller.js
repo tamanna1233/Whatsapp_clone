@@ -87,7 +87,7 @@ in a chat application. Here is a breakdown of what the function does: */
 const sendmessage=asyncHandler(async(req ,res)=>{
     const {chatId}=req.params 
     const {content}=req.body 
-
+console.log(req?.files)
 
     
     if(!content&& !req.files?.attachments?.length >0){
@@ -114,6 +114,7 @@ if (req.files && req?.files?.attachments?.length > 0) {
     }
    
 }
+console.log(messagefile)
 const message=await Message.create({
     sender:new mongoose.Types.ObjectId(req.user._id),
     content:content||"",

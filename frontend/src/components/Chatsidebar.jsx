@@ -58,7 +58,7 @@ const ChatsSidebar = () => {
 
             socket.on(chatEventEnum.MESSAGE_RECEIVED_EVENT, (newMessage) => {
                   setChat((prevChats) =>
-                        prevChats.map((chat) => (chat._id === newMessage.chat ? { ...chat, lastmessage: { content: newMessage.content } } : chat)),
+                        prevChats.map((chat) => (chat._id === newMessage.chat ? { ...chat, lastmessage: { content: newMessage.content,attachment:newMessage.attachment } } : chat)),
                   );
                   setunreadchat((prev = []) => {
                         if (selectedChat?._id === newMessage.chat) return prev; // Ignore if chat is open
@@ -106,7 +106,7 @@ const ChatsSidebar = () => {
             };
       }, [socket, connectSocket, chat]);
 
-      console.log(unreadchat);
+      console.log(chat);
       return (
             <Card className="min-h-screen rounded-none bg-gray-950 p-0 m-0 border-none shadow-none">
                   <CardContent className="p-0">
@@ -196,7 +196,7 @@ const ChatsSidebar = () => {
                                                                                           </span>
                                                                                     ) : (
                                                                                           <span className="text-white">
-                                                                                                {chatItem.lastmessage?.content || 'no message'}
+                                                                                                {chatItem.lastmessage?.content || chatItem.lastmessage?.attachment&&"image"||"no messages"}
                                                                                           </span>
                                                                                     )}
                                                                               </p>

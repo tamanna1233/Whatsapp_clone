@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { EllipsisVertical, PhoneCall, Timer, Video } from 'lucide-react';
+import { EllipsisVertical, PhoneCall,  Timer, Video } from 'lucide-react';
 import { Search } from 'lucide-react';
 import { Phone } from 'lucide-react';
 import { SendHorizontal } from 'lucide-react';
@@ -17,6 +17,7 @@ import { DropdownMenuContent } from './ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Separator } from './ui/separator';
 import { usemessage } from '@/store/messagestore';
+import {Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 const ChatBox = () => {
       /* The above code snippet is written in JavaScript using React. It appears to be a component or
     function that is handling chat functionality. Here is a breakdown of what the code is doing: */
@@ -29,7 +30,7 @@ const ChatBox = () => {
       const documentRef = useRef();
       const [file, setfile] = useState('');
       const otherParticipant = selectedChat?.participants?.find((participant) => participant._id !== authUser._id);
-
+ const [selectedImage,setselectedImage]=useState("")
       /* The above code is a `useEffect` hook in a React component that is setting up event listeners for
    a chat application using a socket connection. Here is a breakdown of what the code is doing: */
       useEffect(() => {
@@ -82,16 +83,22 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
 
       const tabs = ['Overview', 'media', 'files', 'group'];
       const handelsendmessage = () => {
-            const File = documentRef.current.files[0];
-
+            let Fileinput = documentRef.current.files
+           
+           
+            console.log(File)
             const formdata = new FormData();
             formdata.append('content', input);
             formdata.append('sender', { _id: authUser?._id });
-            formdata.append('attachments', File);
-            const newMessage = {
+            if (Fileinput && Fileinput.length > 0) {
+                  // Append each file separately
+                  Array.from(Fileinput).forEach((file) => {
+                      formdata.append("attachments", file);
+                  });
+              }                           const newMessage = {
                   content: input,
                   sender: { _id: authUser?._id },
-                  attachment: [{ url: file }],
+                  attachment: Fileinput ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) })) : [],
                   chat:selectedChat?._id
             };
             sendmessage(selectedChat?._id, formdata);
@@ -100,48 +107,69 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
             }));
             setinput('');
             setfile('');
-      };
-
-      const handelkeydownsendmessage = (e) => {
-            const File = documentRef.current.files[0];
-            console.log('send file', File);
-            if (e.key === 'Enter') {
-                  const formdata = new FormData();
-                  formdata.append('content', input);
-                  formdata.append('sender', { _id: authUser?._id });
-                  formdata.append('attachments', File);
-                  const newMessage = {
-                        content: input,
-                        sender: { _id: authUser?._id },
-                        attachment: [{ url: file }],
-                        chat:selectedChat?._id
-                  };
-                  sendmessage(selectedChat?._id, formdata);
-                  usemessage.setState((state) => ({
-                        messages: [...state.messages, newMessage],
-                  }));
-                  setinput('');
-                  setfile('');
+            if(Fileinput){
+                Fileinput.value=""
             }
       };
 
+      const handelkeydownsendmessage = (e) => {
+            if (e.key === 'Enter') {
+                let Fileinput = documentRef.current?.files; // Get file input
+                const formdata = new FormData();
+                formdata.append('content', input);
+                formdata.append('sender', authUser?._id); // Stringify object if needed
+        
+                if (Fileinput && Fileinput.length > 0) {
+                    // Append each file separately
+                    Array.from(Fileinput).forEach((file) => {
+                        formdata.append("attachments", file);
+                    });
+                }
+        
+                const newMessage = {
+                    content: input,
+                    sender: { _id: authUser?._id },
+                    attachment: Fileinput ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) })) : [],
+                    chat: selectedChat?._id
+                };
+        
+                sendmessage(selectedChat?._id, formdata);
+        
+                usemessage.setState((state) => ({
+                    messages: [...state.messages, newMessage],
+                }));
+        
+                setinput('');
+                setfile('');
+        
+                if (documentRef.current) {
+                    documentRef.current.value = ""; // Reset input
+                }
+            }
+        };
+        
       const scrollRef = useRef(null);
 
       useEffect(() => {
             if (scrollRef.current) {
                   scrollRef.current.scrollIntoView({ behavior: 'smooth' });
             }
-      }, [messages]);
+      }, [messages,typing]);
 
-      const handelfilechange = (e) => {
-            const inputFile = e.target.files[0];
-            console.log(inputFile);
-            if (inputFile) {
-                  const file = URL.createObjectURL(inputFile);
-                  console.log(file);
-                  setfile(file);
+      const handleFileChange = (e) => {
+            const inputFiles = Array.from(e.target.files); // Convert FileList to array
+            console.log(inputFiles);
+        
+            if (inputFiles.length > 0) {
+              const fileObjects = inputFiles.map((file) => ({
+                url: URL.createObjectURL(file),
+                file,
+              }));
+        
+              setfile(fileObjects);
             }
-      };
+          };
+          console.log("fileurl",file)
 
       return (
             <>
@@ -265,7 +293,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       ?.filter((msg) => msg.chat === selectedChat._id) // Filter messages first
                                                       .map((msg, index) => {
                                                             const isSender = msg?.sender?._id !== authUser?._id;
-                                                              
                                                             return (
                                                                   <>
                                                                         <div
@@ -278,7 +305,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                           className="w-6 h-6 rounded-full m-2"
                                                                                     />
                                                                               )}
-
+                                                                                
                                                                               <div
                                                                                     className={`p-2 mt-2 rounded-lg shadow-md max-w-xs break-words ${
                                                                                           isSender
@@ -288,14 +315,35 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     ref={scrollRef}
                                                                               >
                                                                                     <span className="flex flex-col items-start p-2 gap-x-2 gap-y-2 object-cover">
-                                                                                          {msg?.attachment[0]?.url && (
-                                                                                                <img
-                                                                                                      src={msg?.attachment[0]?.url}
-                                                                                                      className={msg.attachment ? 'h-64 w-64' : ''}
-                                                                                                />
-                                                                                          )}
-                                                                                          {msg.content}
-                                                                                          {/* {isMessageSend?<TiTickOutline  />:<Timer/>} */}
+                                                                                        {
+                                                                                          msg?.attachment[0]?.url?
+                                                                                          
+                                                                                                
+                                                                                               <>
+                                                                                                
+                                                                                                      <Sheet  >
+                                                                                                                <div className={msg?.attachment.length >2?'grid grid-cols-2 gap-3 ':"flex justify-center items-center gap-3"}>
+                                                                                                               
+                                                                                                                     { msg?.attachment?.map((file)=>{
+                                                                                                                        console.log(file)
+                                                                                                                        return(  <SheetTrigger asChild >
+                                                                                                                              <img src={file?.url} className='w-32 h-32 object-cover cursor-pointer'  onClick={()=>setselectedImage(file.url)}/>
+                                                                                                                             </SheetTrigger>)
+                                                                                                                     
+                                                                                                                     }
+                                                                                                                  
+                                                                                                                  )
+                                                                                                            }
+                                                                                                            </div>
+                                                                                                                
+                                                                                                                  <span>{msg?.content}</span>
+                                                                                                            <SheetContent className=" h-screen bg-[rgba(255,255,255,0.2)] flex justify-center items-center backdrop-blur-md" > 
+                                                                                                                  <img src={selectedImage} className='w-96 h-96 object-contain'/>
+                                                                                                            </SheetContent>
+                                                                                                      </Sheet>
+                                                                                                      </> 
+                                                                                               
+                                                                                                :<><span>{msg.content}</span></>}
                                                                                     </span>
                                                                               </div>
                                                                               {!isSender && (
@@ -310,17 +358,17 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                   </>
                                                             );
                                                       })}
-                                                           {typing && (
+                                                           {typing && typingchatId===selectedChat?._id && (
                                                                               <div
-                                                                                    ref={scrollRef}
-                                                                                    className="flex items-center gap-2 mt-4 "
+                                                                                    
+                                                                                    className="flex items-center gap-2 mt-4   z-50"
                                                                                     
                                                                               >
                                                                                     <img
                                                                                           src={otherParticipant?.profilePic?.url}
                                                                                           className="w-6 h-6 rounded-full"
                                                                                     />
-                                                                                    <div className="bg-gray-300 p-2 px-4 rounded-lg text-black ">
+                                                                                    <div className="bg-gray-300 p-2 px-4 rounded-lg text-black " ref={scrollRef}>
                                                                                           Typing{' '}
                                                                                           <span className="animate-pulse ">
                                                                                                 <>
@@ -333,14 +381,18 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                         )}
                                           </ScrollArea>
                                     </CardDescription>
-                                    {file && (  <CardContent className="absolute bottom-16">
-                                         
-                                                <div className="bg-black p-8 rounded-md">
-                                                      <img src={file} className="h-52 w-52 rounded-md object-scale-down" />
-                                                      {input && <span className="text-white"> {input}</span>}
-                                                </div>
-                                    </CardContent>
-                                          )}
+                                    {file && (
+  <div className="fixed bg-black bottom-20 rounded-md">
+      <div className={file?.length>2?"grid grid-cols-2 " :"flex justify-center items-center"}>
+        {file.map((file, index) => (
+          <CardContent key={index} className=" p-2  rounded-md object-cover">
+            <img src={file.url} className="h-52 w-52 rounded-md object-cover aspect-square" />
+            {input && <span className="text-white">{input}</span>}
+          </CardContent>
+        ))}
+      </div>
+  </div>
+)}
                                     <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-4  ">
                                           {/* <div className='flex'> */}
 
@@ -353,7 +405,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                           >
                                                 <Plus />
                                           </Button>
-                                          <Input type="file" className="hidden" ref={documentRef} onChange={handelfilechange} />
+                                          <Input type="file"  multiple accept="image/*" className="hidden" ref={documentRef} onChange={handleFileChange} />
                                           <Input
                                                 type="text"
                                                 className="h-10 text-white"
