@@ -64,11 +64,16 @@ const Signup = () => {
             <div>
                   <Card className="m-8 flex flex-col justify-center items-center bg-transparent rounded-none shadow-none border-none">
                         <CardContent className="m-6 bg-black rounded-lg">
-                              <CardTitle className="mt-2 text-center text-white text-3xl">wellcome to Whatsapp </CardTitle>
+                              <CardTitle className="mt-2 text-center text-white text-3xl">
+                                    wellcome to Whatsapp{' '}
+                              </CardTitle>
                               <CardHeader className="text-white text-center">
-                                    if you alreday have account please <Link to="/signin">login</Link>{' '}
+                                    if you alreday have account please{' '}
+                                    <Link to="/signin">login</Link>{' '}
                               </CardHeader>
-                              <CardTitle className="mt-2 text-center text-white text-3xl">Welcome to Whatsapp </CardTitle>
+                              <CardTitle className="mt-2 text-center text-white text-3xl">
+                                    Welcome to Whatsapp{' '}
+                              </CardTitle>
 
                               <Form {...from}>
                                     <form onSubmit={from.handleSubmit(handelOnSubmit)}>
@@ -81,7 +86,10 @@ const Signup = () => {
                                                             <FormItem>
                                                                   <FormLabel>Name</FormLabel>
                                                                   <FormControl>
-                                                                        <Input placeholder="enter your name" {...field} />
+                                                                        <Input
+                                                                              placeholder="enter your name"
+                                                                              {...field}
+                                                                        />
                                                                   </FormControl>
                                                                   <FormMessage />
                                                             </FormItem>
@@ -96,7 +104,10 @@ const Signup = () => {
                                                                   <FormLabel>Username</FormLabel>
 
                                                                   <FormControl>
-                                                                        <Input placeholder="enter your username" {...field} />
+                                                                        <Input
+                                                                              placeholder="enter your username"
+                                                                              {...field}
+                                                                        />
                                                                   </FormControl>
                                                                   <FormMessage />
                                                             </FormItem>
@@ -111,7 +122,10 @@ const Signup = () => {
                                                                   <FormLabel>Email</FormLabel>
 
                                                                   <FormControl>
-                                                                        <Input placeholder="enter your email" {...field} />
+                                                                        <Input
+                                                                              placeholder="enter your email"
+                                                                              {...field}
+                                                                        />
                                                                   </FormControl>
                                                                   <FormMessage />
                                                             </FormItem>
@@ -126,7 +140,10 @@ const Signup = () => {
                                                                   <FormLabel>Phone</FormLabel>
 
                                                                   <FormControl>
-                                                                        <Input placeholder="enter your phone no" {...field} />
+                                                                        <Input
+                                                                              placeholder="enter your phone no"
+                                                                              {...field}
+                                                                        />
                                                                   </FormControl>
                                                                   <FormMessage />
                                                             </FormItem>
@@ -135,13 +152,18 @@ const Signup = () => {
                                                 <FormField
                                                       name="password"
                                                       control={from.control}
-                                                      rules={{ required: 'password no is required' }}
+                                                      rules={{
+                                                            required: 'password no is required',
+                                                      }}
                                                       render={({ field }) => (
                                                             <FormItem>
                                                                   <FormLabel>Password</FormLabel>
 
                                                                   <FormControl>
-                                                                        <Input placeholder="enter your password" {...field} />
+                                                                        <Input
+                                                                              placeholder="enter your password"
+                                                                              {...field}
+                                                                        />
                                                                   </FormControl>
                                                                   <FormMessage />
                                                             </FormItem>
@@ -161,7 +183,9 @@ const Signup = () => {
                                                                               placeholder="enter your profilepic"
                                                                               onChange={(e) => {
                                                                                     handelimage(e);
-                                                                                    field.onChange(e);
+                                                                                    field.onChange(
+                                                                                          e,
+                                                                                    );
                                                                               }}
                                                                         />
                                                                   </FormControl>

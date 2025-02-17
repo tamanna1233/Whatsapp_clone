@@ -22,9 +22,12 @@ const Signin = () => {
             <>
                   <Card className="m-20 p-8 bg-black rounded-3xl">
                         <CardContent className="p-0 items-center">
-                              <CardTitle className="text-white text-xl text-center pt-5">Welcome in Whatsapp</CardTitle>
+                              <CardTitle className="text-white text-xl text-center pt-5">
+                                    Welcome in Whatsapp
+                              </CardTitle>
                               <CardHeader className="text-white text-center">
-                                    if you don't have an account please <Link to="/signup">Signup</Link>{' '}
+                                    if you don't have an account please{' '}
+                                    <Link to="/signup">Signup</Link>{' '}
                               </CardHeader>
                               <Form {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -63,7 +66,10 @@ const Signin = () => {
                                                 )}
                                           />
                                           <div className="pt-4 flex justify-center">
-                                                <Button type="submit" className="w-20 text-lg hover:bg-white hover:text-black ">
+                                                <Button
+                                                      type="submit"
+                                                      className="w-20 text-lg hover:bg-white hover:text-black "
+                                                >
                                                       SignIn
                                                 </Button>
                                           </div>{' '}
