@@ -21,8 +21,11 @@ import {
       Phone,
       Settings,
 } from 'lucide-react';
+import { SquarePen } from 'lucide-react';
+import { DropdownMenu,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,DropdownMenuContent } from '@radix-ui/react-dropdown-menu';
 import { Separator } from '@radix-ui/react-separator';
 import { AiOutlineCluster } from 'react-icons/ai';
+import { authstore } from '@/store/authstore';
 const AppSidebar = () => {
       const { authUser } = authstore();
 

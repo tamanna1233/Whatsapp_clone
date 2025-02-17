@@ -100,13 +100,9 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
             const newMessage = {
                   content: input,
                   sender: { _id: authUser?._id },
-<<<<<<< HEAD
-                  attachment: [{ url: file }],
-=======
                   attachment: Fileinput
                         ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) }))
                         : [],
->>>>>>> 64f09d396b61547e69576b469e4b7de9ad55caca
                   chat: selectedChat?._id,
             };
             sendmessage(selectedChat?._id, formdata);
@@ -137,13 +133,9 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                   const newMessage = {
                         content: input,
                         sender: { _id: authUser?._id },
-<<<<<<< HEAD
-                        attachment: [{ url: file }],
-=======
                         attachment: Fileinput
                               ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) }))
                               : [],
->>>>>>> 64f09d396b61547e69576b469e4b7de9ad55caca
                         chat: selectedChat?._id,
                   };
 
@@ -348,14 +340,9 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                             (msg) => msg.chat === selectedChat._id,
                                                       ) // Filter messages first
                                                       .map((msg, index) => {
-<<<<<<< HEAD
-                                                            const isSender = msg?.sender?._id !== authUser?._id;
-
-=======
                                                             const isSender =
                                                                   msg?.sender?._id !==
                                                                   authUser?._id;
->>>>>>> 64f09d396b61547e69576b469e4b7de9ad55caca
                                                             return (
                                                                   <>
                                                                         <div
@@ -466,17 +453,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                   </>
                                                             );
                                                       })}
-<<<<<<< HEAD
-                                                {typing && (
-                                                      <div ref={scrollRef} className="flex items-center gap-2 mt-4 ">
-                                                            <img src={otherParticipant?.profilePic?.url} className="w-6 h-6 rounded-full" />
-                                                            <div className="bg-gray-300 p-2 px-4 rounded-lg text-black ">
-                                                                  Typing{' '}
-                                                                  <span className="animate-pulse ">
-                                                                        <>
-                                                                              <span className="animate-bounce">.</span>.
-                                                                              <span className="animate-bounce">.</span>{' '}
-=======
                                                 {typing && typingchatId === selectedChat?._id && (
                                                       <div className="flex items-center gap-2 mt-4   z-50">
                                                             <img
@@ -500,7 +476,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                               <span className="animate-bounce">
                                                                                     .
                                                                               </span>{' '}
->>>>>>> 64f09d396b61547e69576b469e4b7de9ad55caca
                                                                         </>
                                                                   </span>
                                                             </div>
@@ -509,14 +484,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                           </ScrollArea>
                                     </CardDescription>
                                     {file && (
-<<<<<<< HEAD
-                                          <CardContent className="absolute bottom-16">
-                                                <div className="bg-black p-8 rounded-md">
-                                                      <img src={file} className="h-52 w-52 rounded-md object-scale-down" />
-                                                      {input && <span className="text-white"> {input}</span>}
-                                                </div>
-                                          </CardContent>
-=======
                                           <div className="fixed bg-black bottom-20 rounded-md">
                                                 <div
                                                       className={
@@ -543,7 +510,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       ))}
                                                 </div>
                                           </div>
->>>>>>> 64f09d396b61547e69576b469e4b7de9ad55caca
                                     )}
                                     <CardFooter className="flex items-center justify-center gap-2   bg-gray-950 p-4  ">
                                           {/* <div className='flex'> */}
