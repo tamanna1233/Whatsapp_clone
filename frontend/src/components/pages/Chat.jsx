@@ -8,7 +8,12 @@ const Chat = () => {
             <div className="h-full w-full">
                   <ResizablePanelGroup direction="horizontal" className="flex h-full">
                         {/* Chatsidebar Panel */}
-                        <ResizablePanel minSize={30} defaultSize={30} maxSize={60} className="bg-slate-800">
+                        <ResizablePanel
+                              minSize={30}
+                              defaultSize={30}
+                              maxSize={60}
+                              className="bg-slate-800"
+                        >
                               <Chatsidebar />
                         </ResizablePanel>
 

@@ -8,7 +8,9 @@ export const usemessage = create((set) => ({
             if (!chatId) return;
             const res = await axiosInstances.get(`message/getallmessage/${chatId}`);
             set((state) => ({
-                  messages: Array.isArray(res.data.data) ? [...res.data.data].reverse() : state.messages,
+                  messages: Array.isArray(res.data.data)
+                        ? [...res.data.data].reverse()
+                        : state.messages,
             }));
       },
       sendmessage: async (chatId, data) => {

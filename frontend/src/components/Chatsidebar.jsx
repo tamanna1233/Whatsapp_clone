@@ -3,7 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader } from './ui/card';
 import { FaPenToSquare } from 'react-icons/fa6';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import {
+      DropdownMenu,
+      DropdownMenuContent,
+      DropdownMenuTrigger,
+      DropdownMenuItem,
+      DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { useChat } from '@/store/chatStore';
 import { authstore } from '@/store/authstore';
 import { chatEventEnum } from '@/constants';
@@ -58,13 +64,25 @@ const ChatsSidebar = () => {
 
             socket.on(chatEventEnum.MESSAGE_RECEIVED_EVENT, (newMessage) => {
                   setChat((prevChats) =>
-                        prevChats.map((chat) => (chat._id === newMessage.chat ? { ...chat, lastmessage: { content: newMessage.content } } : chat)),
+                        prevChats.map((chat) =>
+                              chat._id === newMessage.chat
+                                    ? {
+                                            ...chat,
+                                            lastmessage: {
+                                                  content: newMessage.content,
+                                                  attachment: newMessage.attachment,
+                                            },
+                                      }
+                                    : chat,
+                        ),
                   );
                   setunreadchat((prev = []) => {
                         if (selectedChat?._id === newMessage.chat) return prev; // Ignore if chat is open
                         return {
                               ...prev,
-                              [newMessage.chat]: prev[newMessage.chat] ? prev[newMessage.chat] + 1 : 1, // Ensure correct increment
+                              [newMessage.chat]: prev[newMessage.chat]
+                                    ? prev[newMessage.chat] + 1
+                                    : 1, // Ensure correct increment
                         };
                   });
             });
@@ -106,14 +124,16 @@ const ChatsSidebar = () => {
             };
       }, [socket, connectSocket, chat]);
 
-      console.log(unreadchat);
+      console.log(chat);
       return (
             <Card className="min-h-screen rounded-none bg-gray-950 p-0 m-0 border-none shadow-none">
                   <CardContent className="p-0">
                         <CardHeader className="p-0 mb-4">
                               <div className="flex justify-between items-center text-xl text-white p-2 mt-4">
                                     <span>Chats</span>
-                                    <DropdownMenu onOpenChange={(open) => open && handleAvailableChat()}>
+                                    <DropdownMenu
+                                          onOpenChange={(open) => open && handleAvailableChat()}
+                                    >
                                           <DropdownMenuTrigger asChild>
                                                 <FaPenToSquare />
                                           </DropdownMenuTrigger>
@@ -125,24 +145,39 @@ const ChatsSidebar = () => {
                                                 <ScrollArea className="h-96">
                                                       {availableChats?.length > 0 &&
                                                             availableChats?.map((chat) => (
-                                                                  <div key={chat?._id} className="py-2 text-white">
+                                                                  <div
+                                                                        key={chat?._id}
+                                                                        className="py-2 text-white"
+                                                                  >
                                                                         <DropdownMenuItem
                                                                               onClick={(e) => {
                                                                                     e.preventDefault();
-                                                                                    handleSelectedChat(chat?._id);
+                                                                                    handleSelectedChat(
+                                                                                          chat?._id,
+                                                                                    );
                                                                               }}
                                                                               className="hover:bg-gray-700"
                                                                         >
                                                                               <div className="flex justify-between items-center gap-2">
                                                                                     <img
-                                                                                          src={chat?.profilePic?.url}
+                                                                                          src={
+                                                                                                chat
+                                                                                                      ?.profilePic
+                                                                                                      ?.url
+                                                                                          }
                                                                                           alt=""
                                                                                           className="w-10 h-10 rounded-full object-cover mr-3"
                                                                                     />
                                                                                     <div className="flex flex-col">
-                                                                                          <span className="font-semibold">{chat?.name}</span>
+                                                                                          <span className="font-semibold">
+                                                                                                {
+                                                                                                      chat?.name
+                                                                                                }
+                                                                                          </span>
                                                                                           <span className="text-gray-500 font-medium">
-                                                                                                {chat?.about}
+                                                                                                {
+                                                                                                      chat?.about
+                                                                                                }
                                                                                           </span>
                                                                                     </div>
                                                                               </div>
@@ -162,9 +197,12 @@ const ChatsSidebar = () => {
                                     <div className="space-y-2">
                                           {chat?.map((chatItem) => {
                                                 // Find the correct participant (not the logged-in user)
-                                                const otherParticipant = chatItem?.participants?.find(
-                                                      (participant) => participant?._id !== authUser?._id,
-                                                );
+                                                const otherParticipant =
+                                                      chatItem?.participants?.find(
+                                                            (participant) =>
+                                                                  participant?._id !==
+                                                                  authUser?._id,
+                                                      );
 
                                                 return (
                                                       <div
@@ -182,34 +220,64 @@ const ChatsSidebar = () => {
                                                             <div className="flex items-center justify-between">
                                                                   <div className="flex items-center">
                                                                         <img
-                                                                              src={otherParticipant?.profilePic?.url}
-                                                                              alt={otherParticipant?.name}
+                                                                              src={
+                                                                                    otherParticipant
+                                                                                          ?.profilePic
+                                                                                          ?.url
+                                                                              }
+                                                                              alt={
+                                                                                    otherParticipant?.name
+                                                                              }
                                                                               className="w-10 h-10 rounded-full object-cover mr-3"
                                                                         />
                                                                         <div>
-                                                                              <span className="font-semibold">{otherParticipant?.name}</span>
+                                                                              <span className="font-semibold">
+                                                                                    {
+                                                                                          otherParticipant?.name
+                                                                                    }
+                                                                              </span>
                                                                               <p className="text-sm text-emerald-500">
-                                                                                    {typingchatId === chatItem._id && typing ? (
+                                                                                    {typingchatId ===
+                                                                                          chatItem._id &&
+                                                                                    typing ? (
                                                                                           <span className="">
                                                                                                 typing
-                                                                                                <span className="animate-pulse">...</span>
+                                                                                                <span className="animate-pulse">
+                                                                                                      ...
+                                                                                                </span>
                                                                                           </span>
                                                                                     ) : (
                                                                                           <span className="text-white">
-                                                                                                {chatItem.lastmessage?.content || 'no message'}
+                                                                                                {chatItem
+                                                                                                      .lastmessage
+                                                                                                      ?.content ||
+                                                                                                      (chatItem
+                                                                                                            .lastmessage
+                                                                                                            ?.attachment &&
+                                                                                                            'image') ||
+                                                                                                      'no messages'}
                                                                                           </span>
                                                                                     )}
                                                                               </p>
                                                                         </div>
                                                                   </div>
                                                                   <span className="text-sm text-gray-400">
-                                                                        {chatItem?.lastmessage?.createdAt
-                                                                              ? new Date(chatItem.lastmessage?.createdAt).toLocaleDateString()
+                                                                        {chatItem?.lastmessage
+                                                                              ?.createdAt
+                                                                              ? new Date(
+                                                                                      chatItem.lastmessage?.createdAt,
+                                                                                ).toLocaleDateString()
                                                                               : ' '}
                                                                   </span>
-                                                                  {unreadchat?.[chatItem._id] > 0 && (
+                                                                  {unreadchat?.[chatItem._id] >
+                                                                        0 && (
                                                                         <span className="bg-emerald-500 text-white text-sm font-normal  h-4 w-4 shadow-md  rounded-full flex items-center justify-center">
-                                                                              {unreadchat?.[chatItem._id]}
+                                                                              {
+                                                                                    unreadchat?.[
+                                                                                          chatItem
+                                                                                                ._id
+                                                                                    ]
+                                                                              }
                                                                         </span>
                                                                   )}
                                                             </div>

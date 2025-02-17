@@ -6,6 +6,6 @@ import { upload } from "../middleware/mullter.middleware.js"
 does: */
 const router =Router()
 router.route("/getallmessage/:chatId").get(verifyjwt, getallmessages)
-router.route("/sendmessage/:chatId").post(verifyjwt,upload.fields([{ name: "attachments" }]), sendmessage)
+router.route("/sendmessage/:chatId").post(verifyjwt, upload.fields([{ name: "attachments", maxCount: 5 }]), sendmessage)
 
 export default router

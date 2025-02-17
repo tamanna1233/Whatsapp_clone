@@ -13,11 +13,16 @@ import {
       SidebarFooter,
       SidebarHeader,
 } from './ui/sidebar';
-import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { SquarePen, MessageCircle, Phone, CircleDotDashed, Settings } from 'lucide-react';
-import { Input } from './ui/input';
-import { authstore } from '@/store/authstore';
-
+import {
+      ChartAreaIcon,
+      CircleAlertIcon,
+      CircleDotDashed,
+      MessageCircle,
+      Phone,
+      Settings,
+} from 'lucide-react';
+import { Separator } from '@radix-ui/react-separator';
+import { AiOutlineCluster } from 'react-icons/ai';
 const AppSidebar = () => {
       const { authUser } = authstore();
 
@@ -72,15 +77,19 @@ const AppSidebar = () => {
                               </SidebarHeader>
                               <SidebarContent className="bg-black backdrop-blur-md">
                                     <SidebarGroup>
-                                          <SidebarGroupLabel className="text-2xl font-semibold text-white">Whatsapp</SidebarGroupLabel>
+                                          <SidebarGroupLabel className="text-2xl font-semibold  text-white">
+                                                Whatsapp
+                                          </SidebarGroupLabel>
                                           <SidebarGroupContent>
                                                 <SidebarMenu className="flex flex-col gap-y-6 mt-8 text-white">
                                                       {items.map((item) => (
                                                             <SidebarMenuItem key={item.id}>
                                                                   <SidebarMenuButton>
-                                                                        <div className="flex items-center gap-2">
-                                                                              <item.icon />
-                                                                              <span>{item.name}</span>
+                                                                        <div className="flex items-center justify-center gap-2">
+                                                                              <items.icon />
+                                                                              <span>
+                                                                                    {items.name}
+                                                                              </span>
                                                                         </div>
                                                                   </SidebarMenuButton>
                                                             </SidebarMenuItem>
