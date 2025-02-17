@@ -4,6 +4,7 @@ import { authstore } from './store/authstore';
 import AppSidebar from './components/Sidebar';
 import { Outlet } from 'react-router';
 import { chatEventEnum } from './constants';
+import Setting from './components/Setting';
 
 function App() {
       const { checkCurrentUser, authUser, socket } = authstore();
@@ -19,6 +20,7 @@ function App() {
 
       return (
             <div className="flex h-screen fixed w-screen font-serif">
+                  <Setting />
                   <AppSidebar />
                   <Outlet />
             </div>

@@ -120,13 +120,13 @@ const currentUser = asyncHandler(async (req, res) => {
 });
 // update profile
 const updateProfile = asyncHandler(async (req,res) => {
-const {name, phoneNo, email, username}= req.body
+const {name, phoneNo, email, username, about}= req.body
     const { _id }= req.user
  const user = await User.findById(_id);
  if(!user){
     return res.status(404).json(new apiResponse(404, 'user not found'))
  }
- const updateUser = await User.findByIdAndUpdate(_id,{name,phoneNo,email,username},{
+ const updateUser = await User.findByIdAndUpdate(_id,{name,phoneNo,email,username,about},{
     new:true
  })
  if(!updateUser){
