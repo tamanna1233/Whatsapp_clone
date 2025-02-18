@@ -25,7 +25,7 @@ import { DropdownMenu,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,D
 import { authstore } from '@/store/authstore';
 import { Input } from './ui/input';
 const AppSidebar = () => {
-      const { authUser } = authstore();
+      const { authUser,updateProfile } = authstore();
 
       const items = [
             { id: 1, name: 'Chats', icon: MessageCircle },
@@ -36,13 +36,11 @@ const AppSidebar = () => {
       const [userData, setUserData] = useState({
             name: "",
             about: "",
-            email: "",
       });
 
       const [editMode, setEditMode] = useState({
             name: false,
             about: false,
-            email: false,
       });
 
       // **Update userData when authUser is available**
@@ -51,7 +49,6 @@ const AppSidebar = () => {
                   setUserData({
                         name: authUser.name || "",
                         about: authUser.about || "",
-                        email: authUser.email || "",
                   });
             }
       }, [authUser]);
@@ -64,9 +61,15 @@ const AppSidebar = () => {
             setUserData((prev) => ({ ...prev, [field]: e.target.value }));
       };
 
-      const handleBlur = (field) => {
+      const handleBlur = async(field) => {
+            console.log(field)
+            if (!userData[field] || userData[field] === authUser[field]) return; // Prevent sending if unchanged
+            
+         await  updateProfile(userData)
+
+
             setEditMode((prev) => ({ ...prev, [field]: false }));
-            // Save the updated user data (e.g., API call or update authstore)
+            
       };
 
       return (
@@ -100,7 +103,7 @@ const AppSidebar = () => {
                                     </SidebarGroup>
                               </SidebarContent>
                               <SidebarFooter className="bg-black">
-                                    <DropdownMenu>
+                                    <DropdownMenu modal={false}>
                                           <DropdownMenuTrigger asChild>
                                                 <Settings color="white" className="cursor-pointer" />
                                           </DropdownMenuTrigger>
@@ -110,14 +113,14 @@ const AppSidebar = () => {
                                                 <DropdownMenuItem className="justify-center">
                                                       <img src={authUser?.profilePic?.url} alt="" className="w-16 h-16 rounded-full" />
                                                 </DropdownMenuItem>
-                                                {["name", "about", "email"].map((field) => (
-                                                      <DropdownMenuItem key={field} className="text-slate-300 justify-between hover:bg-transparent">
+                                                {["name", "about"].map((field) => (
+                                                      <DropdownMenuItem key={field} className="text-slate-300 justify-between hover:bg-transparent" onSelect={(e) => e.preventDefault()}>
                                                             {editMode[field] ? (
                                                                   <Input
                                                                         className="text-white"
                                                                         value={userData[field]}
-                                                                        onChange={(e) => handleChange(e, field)}
-                                                                        onBlur={() => handleBlur(field)}
+                                                                        onChange={(e) =>{  handleChange(e, field)}}
+                                                                        onBlur={(e) => {handleBlur(field)}}
                                                                         autoFocus
                                                                   />
                                                             ) : (
@@ -126,6 +129,8 @@ const AppSidebar = () => {
                                                             <SquarePen onClick={(e) => {e.preventDefault();handleEdit(field)}} className="cursor-pointer" />
                                                       </DropdownMenuItem>
                                                 ))}
+                                    <DropdownMenuItem className="text-slate-300">{authUser?.email}</DropdownMenuItem>
+
                                                 <DropdownMenuItem className="text-slate-300">Delete Account</DropdownMenuItem>
                                                 <DropdownMenuSeparator className="mt-16" />
                                                 <DropdownMenuItem className="text-red-500">Logout</DropdownMenuItem>

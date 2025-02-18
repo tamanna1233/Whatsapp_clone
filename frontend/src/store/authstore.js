@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { axiosInstances } from '../services/axios';
 import { io, Socket } from 'socket.io-client';
 import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router';
+import { data, useNavigate } from 'react-router';
 import { chatEventEnum } from '@/constants';
 export const authstore = create((set, get) => ({
       authUser: '',
@@ -79,6 +79,27 @@ export const authstore = create((set, get) => ({
             }
       },
 
+      updateProfile:async(data)=>{
+            console.log(data)
+            try {
+                  const res=await axiosInstances.patch("users/updateuser",data)
+                  if(res.data.success){
+                        toast({
+                              title:" profile updated ",
+                        })
+                  }
+                  else{
+                        toast({
+                              title: 'failed  ',
+                              description: error.response?.data?.message || 'something went wrong',
+                        });
+                  }
+            } catch (error) {
+                  console.log(error.response)
+                  
+            }
+
+      },
       // Connect the socket
       /* The `connectSocket` function in the `authstore` zustand store is responsible for establishing a
     socket connection to a specified server. Here's a breakdown of what it does: */
