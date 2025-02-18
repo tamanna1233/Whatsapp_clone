@@ -26,6 +26,35 @@ export const authstore = create((set, get) => ({
             }
       },
 
+      // logout
+
+      logout: async()=>{
+            try{
+
+                  const res = await axiosInstances.get('users/logout');
+                  if(res.data.success){
+                        console.log(res.data)
+                        set({authUser:null});
+                  }
+            }catch(error){
+                  console.error("Error while logging out");
+            }
+      },
+      // delete user
+      deleteuser : async()=>{
+            try{
+                  const res = await axiosInstances.delete('users/deleteuser');
+                  if(res.data.success){
+                        console.log(res.data)
+                        set({authUser:null});
+                        }
+                        }
+                        catch(error){
+                              console.error("Error while deleting user");
+                              }
+            },
+      
+
       /* The `login` function in the `authstore` zustand store is responsible for handling the login
     functionality. Here's a breakdown of what it does: */
       login: async (data, navigate) => {

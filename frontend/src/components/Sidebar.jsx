@@ -24,8 +24,13 @@ import { SquarePen } from 'lucide-react';
 import { DropdownMenu,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,DropdownMenuContent } from './ui/dropdown-menu';
 import { authstore } from '@/store/authstore';
 import { Input } from './ui/input';
+import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import { Button } from './ui/button';
 const AppSidebar = () => {
-      const { authUser } = authstore();
+      const { authUser,logout,deleteuser } = authstore();
+
+
 
       const items = [
             { id: 1, name: 'Chats', icon: MessageCircle },
@@ -36,13 +41,11 @@ const AppSidebar = () => {
       const [userData, setUserData] = useState({
             name: "",
             about: "",
-            email: "",
       });
 
       const [editMode, setEditMode] = useState({
             name: false,
             about: false,
-            email: false,
       });
 
       // **Update userData when authUser is available**
@@ -51,7 +54,6 @@ const AppSidebar = () => {
                   setUserData({
                         name: authUser.name || "",
                         about: authUser.about || "",
-                        email: authUser.email || "",
                   });
             }
       }, [authUser]);
@@ -110,7 +112,7 @@ const AppSidebar = () => {
                                                 <DropdownMenuItem className="justify-center">
                                                       <img src={authUser?.profilePic?.url} alt="" className="w-16 h-16 rounded-full" />
                                                 </DropdownMenuItem>
-                                                {["name", "about", "email"].map((field) => (
+                                                {["name", "about"].map((field) => (
                                                       <DropdownMenuItem key={field} className="text-slate-300 justify-between hover:bg-transparent">
                                                             {editMode[field] ? (
                                                                   <Input
@@ -126,9 +128,29 @@ const AppSidebar = () => {
                                                             <SquarePen onClick={(e) => {e.preventDefault();handleEdit(field)}} className="cursor-pointer" />
                                                       </DropdownMenuItem>
                                                 ))}
-                                                <DropdownMenuItem className="text-slate-300">Delete Account</DropdownMenuItem>
+
+                                                <DropdownMenuItem className="text-slate-300">{authUser?.email}</DropdownMenuItem>
+                                                 <AlertDialog>
+                                                      <AlertDialogTrigger asChild>
+                                                      <DropdownMenuItem className="text-slate-300" onSelect={(e)=>{e.preventDefault()}} >Delete Account</DropdownMenuItem>
+
+                                                      </AlertDialogTrigger>
+                                                      <AlertDialogContent> 
+                                                            <AlertDialogHeader>
+                                                                  <AlertDialogTitle> Are you abosolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete your
+                                                            account and remove your data from our servers.
+                                                            </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                  <AlertDialogAction onClick={()=>deleteuser()} className='bg-rose-700'>Delete</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                      </AlertDialogContent>
+                                                 </AlertDialog>
                                                 <DropdownMenuSeparator className="mt-16" />
-                                                <DropdownMenuItem className="text-red-500">Logout</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-red-500" onClick={()=>logout()}>Logout</DropdownMenuItem>
                                           </DropdownMenuContent>
                                     </DropdownMenu>
                               </SidebarFooter>
