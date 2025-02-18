@@ -24,8 +24,11 @@ import { SquarePen } from 'lucide-react';
 import { DropdownMenu,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,DropdownMenuContent } from './ui/dropdown-menu';
 import { authstore } from '@/store/authstore';
 import { Input } from './ui/input';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 const AppSidebar = () => {
-      const { authUser,updateProfile } = authstore();
+      const { authUser,logout,deleteuser,updateProfile } = authstore();
+
+
 
       const items = [
             { id: 1, name: 'Chats', icon: MessageCircle },
@@ -104,7 +107,7 @@ const AppSidebar = () => {
                               </SidebarContent>
                               <SidebarFooter className="bg-black">
                                     <DropdownMenu modal={false}>
-                                          <DropdownMenuTrigger asChild>
+                                          <DropdownMenuTrigger aChild>
                                                 <Settings color="white" className="cursor-pointer" />
                                           </DropdownMenuTrigger>
                                           <DropdownMenuContent className="bg-slate-950 rounded-none mx-8 w-96 h-4/5">
@@ -129,11 +132,30 @@ const AppSidebar = () => {
                                                             <SquarePen onClick={(e) => {e.preventDefault();handleEdit(field)}} className="cursor-pointer" />
                                                       </DropdownMenuItem>
                                                 ))}
-                                    <DropdownMenuItem className="text-slate-300">{authUser?.email}</DropdownMenuItem>
 
-                                                <DropdownMenuItem className="text-slate-300">Delete Account</DropdownMenuItem>
+
+                                                <DropdownMenuItem className="text-slate-300">{authUser?.email}</DropdownMenuItem>
+                                                 <AlertDialog>
+                                                      <AlertDialogTrigger asChild>
+                                                      <DropdownMenuItem className="text-slate-300" onSelect={(e)=>{e.preventDefault()}} >Delete Account</DropdownMenuItem>
+
+                                                      </AlertDialogTrigger>
+                                                      <AlertDialogContent> 
+                                                            <AlertDialogHeader>
+                                                                  <AlertDialogTitle> Are you abosolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete your
+                                                            account and remove your data from our servers.
+                                                            </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                  <AlertDialogAction onClick={()=>deleteuser()} className='bg-rose-700'>Delete</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                      </AlertDialogContent>
+                                                 </AlertDialog>
                                                 <DropdownMenuSeparator className="mt-16" />
-                                                <DropdownMenuItem className="text-red-500">Logout</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-red-500" onClick={()=>logout()}>Logout</DropdownMenuItem>
                                           </DropdownMenuContent>
                                     </DropdownMenu>
                               </SidebarFooter>

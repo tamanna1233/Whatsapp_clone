@@ -301,7 +301,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       </div>
                                                       <span className="flex flex-col gap-0 ">
                                                             <h2 className="text-white fixed transfrom -translate-y-5 ">
-                                                                  {otherParticipant.name}
+                                                                  {otherParticipant?.name}
                                                             </h2>
                                                             <span className=" text-xs p-0 px-1 fixed  translate-y-0 text-emerald-500">
                                                                   {selectedChat?._id ===
