@@ -14,18 +14,16 @@ import {
       SidebarHeader,
 } from './ui/sidebar';
 import {
-      ChartAreaIcon,
-      CircleAlertIcon,
+     
       CircleDotDashed,
       MessageCircle,
       Phone,
       Settings,
 } from 'lucide-react';
 import { SquarePen } from 'lucide-react';
-import { DropdownMenu,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,DropdownMenuContent } from '@radix-ui/react-dropdown-menu';
-import { Separator } from '@radix-ui/react-separator';
-import { AiOutlineCluster } from 'react-icons/ai';
+import { DropdownMenu,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger,DropdownMenuContent } from './ui/dropdown-menu';
 import { authstore } from '@/store/authstore';
+import { Input } from './ui/input';
 const AppSidebar = () => {
       const { authUser } = authstore();
 
@@ -89,7 +87,7 @@ const AppSidebar = () => {
                                                             <SidebarMenuItem key={item.id}>
                                                                   <SidebarMenuButton>
                                                                         <div className="flex items-center justify-center gap-2">
-                                                                              <items.icon />
+                                                                             {React.createElement(item.icon)}
                                                                               <span>
                                                                                     {items.name}
                                                                               </span>
