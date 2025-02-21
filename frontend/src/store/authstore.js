@@ -28,32 +28,29 @@ export const authstore = create((set, get) => ({
 
       // logout
 
-      logout: async()=>{
-            try{
-
+      logout: async () => {
+            try {
                   const res = await axiosInstances.get('users/logout');
-                  if(res.data.success){
-                        console.log(res.data)
-                        set({authUser:null});
+                  if (res.data.success) {
+                        console.log(res.data);
+                        set({ authUser: null });
                   }
-            }catch(error){
-                  console.error("Error while logging out");
+            } catch (error) {
+                  console.error('Error while logging out');
             }
       },
       // delete user
-      deleteuser : async()=>{
-            try{
+      deleteuser: async () => {
+            try {
                   const res = await axiosInstances.delete('users/deleteuser');
-                  if(res.data.success){
-                        console.log(res.data)
-                        set({authUser:null});
-                        }
-                        }
-                        catch(error){
-                              console.error("Error while deleting user");
-                              }
-            },
-      
+                  if (res.data.success) {
+                        console.log(res.data);
+                        set({ authUser: null });
+                  }
+            } catch (error) {
+                  console.error('Error while deleting user');
+            }
+      },
 
       /* The `login` function in the `authstore` zustand store is responsible for handling the login
     functionality. Here's a breakdown of what it does: */
@@ -108,26 +105,23 @@ export const authstore = create((set, get) => ({
             }
       },
 
-      updateProfile:async(data)=>{
-            console.log(data)
+      updateProfile: async (data) => {
+            console.log(data);
             try {
-                  const res=await axiosInstances.patch("users/updateuser",data)
-                  if(res.data.success){
+                  const res = await axiosInstances.patch('users/updateuser', data);
+                  if (res.data.success) {
                         toast({
-                              title:" profile updated ",
-                        })
-                  }
-                  else{
+                              title: ' profile updated ',
+                        });
+                  } else {
                         toast({
                               title: 'failed  ',
                               description: error.response?.data?.message || 'something went wrong',
                         });
                   }
             } catch (error) {
-                  console.log(error.response)
-                  
+                  console.log(error.response);
             }
-
       },
       // Connect the socket
       /* The `connectSocket` function in the `authstore` zustand store is responsible for establishing a

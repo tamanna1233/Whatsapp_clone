@@ -18,11 +18,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Separator } from './ui/separator';
 import { usemessage } from '@/store/messagestore';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import {
+      ContextMenu,
+      ContextMenuContent,
+      ContextMenuItem,
+      ContextMenuTrigger,
+} from '@radix-ui/react-context-menu';
 const ChatBox = () => {
       /* The above code snippet is written in JavaScript using React. It appears to be a component or
     function that is handling chat functionality. Here is a breakdown of what the code is doing: */
       const { selectedChat } = useChat();
-      const { getallmessage, messages, sendmessage, isMessageSend } = usemessage();
+      const { getallmessage, messages, sendmessage, isMessageSend, deleteMessage } = usemessage();
       const { authUser, socket } = authstore();
       const [typing, settyping] = useState(false);
       const [input, setinput] = useState('');
@@ -50,6 +56,13 @@ const ChatBox = () => {
                   console.log('new message', newMessage);
                   usemessage.setState((state) => ({
                         messages: [...state.messages, newMessage],
+                  }));
+            });
+
+            socket.on(chatEventEnum.MESSAGE_DELETE_EVENT, (message) => {
+                  console.log('mesage delete ', message);
+                  usemessage.setState((state) => ({
+                        messages: state.messages.filter((msg) => msg._id !== message._id),
                   }));
             });
 
@@ -106,9 +119,9 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                   chat: selectedChat?._id,
             };
             sendmessage(selectedChat?._id, formdata);
-            usemessage.setState((state) => ({
-                  messages: [...state.messages, newMessage],
-            }));
+            // usemessage.setState((state) => ({
+            //       messages: [...state.messages, newMessage],
+            // }));
             setinput('');
             setfile('');
             if (Fileinput) {
@@ -141,9 +154,9 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
 
                   sendmessage(selectedChat?._id, formdata);
 
-                  usemessage.setState((state) => ({
-                        messages: [...state.messages, newMessage],
-                  }));
+                  // usemessage.setState((state) => ({
+                  //       messages: [...state.messages, newMessage],
+                  // }));
 
                   setinput('');
                   setfile('');
@@ -192,7 +205,8 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                               src={
                                                                                     otherParticipant
                                                                                           ?.profilePic
-                                                                                          ?.url
+                                                                                          ?.url ||
+                                                                                    'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7'
                                                                               }
                                                                               alt=""
                                                                               className="w-10 h-10 rounded-full"
@@ -240,13 +254,15 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                               src={
                                                                                                                                     otherParticipant
                                                                                                                                           ?.profilePic
-                                                                                                                                          ?.url
+                                                                                                                                          ?.url ||
+                                                                                                                                    'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7'
                                                                                                                               }
                                                                                                                               className="h-32 w-32 rounded-full p-0"
                                                                                                                         />
                                                                                                                         <span>
                                                                                                                               {String(
-                                                                                                                                    otherParticipant?.name,
+                                                                                                                                    otherParticipant?.name ||
+                                                                                                                                          "what'sappuser",
                                                                                                                               )
                                                                                                                                     .trim()
                                                                                                                                     .toUpperCase()}
@@ -254,7 +270,8 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                         <span>
                                                                                                                               ~
                                                                                                                               {String(
-                                                                                                                                    otherParticipant?.username,
+                                                                                                                                    otherParticipant?.username ||
+                                                                                                                                          'whatsappuser',
                                                                                                                               )
                                                                                                                                     .trim()
                                                                                                                                     .toLowerCase()}
@@ -301,7 +318,8 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       </div>
                                                       <span className="flex flex-col gap-0 ">
                                                             <h2 className="text-white fixed transfrom -translate-y-5 ">
-                                                                  {otherParticipant?.name}
+                                                                  {otherParticipant?.name ||
+                                                                        'whatsappuser'}
                                                             </h2>
                                                             <span className=" text-xs p-0 px-1 fixed  translate-y-0 text-emerald-500">
                                                                   {selectedChat?._id ===
@@ -355,7 +373,8 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                 msg
                                                                                                       ?.sender
                                                                                                       ?.profilePic
-                                                                                                      ?.url
+                                                                                                      ?.url ||
+                                                                                                'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7'
                                                                                           }
                                                                                           className="w-6 h-6 rounded-full m-2"
                                                                                     />
@@ -389,9 +408,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                         (
                                                                                                                               file,
                                                                                                                         ) => {
-                                                                                                                              console.log(
-                                                                                                                                    file,
-                                                                                                                              );
                                                                                                                               return (
                                                                                                                                     <SheetTrigger
                                                                                                                                           asChild
@@ -412,12 +428,28 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                         },
                                                                                                                   )}
                                                                                                             </div>
+                                                                                                            <ContextMenu>
+                                                                                                                  <ContextMenuTrigger
+                                                                                                                        asChild
+                                                                                                                  >
+                                                                                                                        <span className="">
+                                                                                                                              {
+                                                                                                                                    msg?.content
+                                                                                                                              }
+                                                                                                                        </span>
+                                                                                                                  </ContextMenuTrigger>
+                                                                                                                  <ContextMenuContent className="w-52">
+                                                                                                                        <ContextMenuItem
+                                                                                                                              inset
+                                                                                                                        >
+                                                                                                                              Copy
+                                                                                                                        </ContextMenuItem>
+                                                                                                                        <ContextMenuItem>
+                                                                                                                              delete
+                                                                                                                        </ContextMenuItem>
+                                                                                                                  </ContextMenuContent>
+                                                                                                            </ContextMenu>
 
-                                                                                                            <span>
-                                                                                                                  {
-                                                                                                                        msg?.content
-                                                                                                                  }
-                                                                                                            </span>
                                                                                                             <SheetContent className=" h-screen bg-[rgba(255,255,255,0.2)] flex justify-center items-center backdrop-blur-md">
                                                                                                                   <img
                                                                                                                         src={
@@ -430,11 +462,51 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                 </>
                                                                                           ) : (
                                                                                                 <>
-                                                                                                      <span>
-                                                                                                            {
-                                                                                                                  msg.content
-                                                                                                            }
-                                                                                                      </span>
+                                                                                                      <ContextMenu>
+                                                                                                            <ContextMenuTrigger
+                                                                                                                  asChild
+                                                                                                            >
+                                                                                                                  <span className="">
+                                                                                                                        {
+                                                                                                                              msg?.content
+                                                                                                                        }
+                                                                                                                  </span>
+                                                                                                            </ContextMenuTrigger>
+                                                                                                            <ContextMenuContent className="w-32 bg-black mt-8 p-2 rounded-md flex flex-col gap-y-4 text-white">
+                                                                                                                  <ContextMenuItem
+                                                                                                                        inset
+                                                                                                                  >
+                                                                                                                        Copy
+                                                                                                                  </ContextMenuItem>
+                                                                                                                  {isSender ? (
+                                                                                                                        <ContextMenuItem
+                                                                                                                              inset
+                                                                                                                              disabled
+                                                                                                                              className="text-gray-400"
+                                                                                                                        >
+                                                                                                                              delete
+                                                                                                                        </ContextMenuItem>
+                                                                                                                  ) : (
+                                                                                                                        <ContextMenuItem
+                                                                                                                              inset
+                                                                                                                              onClick={() => {
+                                                                                                                                    console.log(
+                                                                                                                                          'click',
+                                                                                                                                    );
+                                                                                                                                    deleteMessage(
+                                                                                                                                          {
+                                                                                                                                                messageId:
+                                                                                                                                                      msg._id,
+                                                                                                                                                chatId: msg.chat,
+                                                                                                                                          },
+                                                                                                                                    );
+                                                                                                                              }}
+                                                                                                                        >
+                                                                                                                              delete
+                                                                                                                        </ContextMenuItem>
+                                                                                                                  )}
+                                                                                                            </ContextMenuContent>
+                                                                                                      </ContextMenu>
                                                                                                 </>
                                                                                           )}
                                                                                     </span>

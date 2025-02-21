@@ -4,7 +4,7 @@ import {apiError} from "../utils/apiError.js"
 import { Message } from "../Models/message.model.js"
 import mongoose from "mongoose"
 import {apiResponse} from "../utils/apiResponse.js"
-import {uploadOnCloudinary} from "../utils/cloudnariy.js"
+import {deleteOnCloudninary, uploadOnCloudinary} from "../utils/cloudnariy.js"
 import { emitSocketEvent } from '../scoket/index.js';
 import { chatEventEnum } from '../constant.js';
 /**
@@ -114,7 +114,6 @@ if (req.files && req?.files?.attachments?.length > 0) {
     }
    
 }
-console.log(messagefile)
 const message=await Message.create({
     sender:new mongoose.Types.ObjectId(req.user._id),
     content:content||"",
@@ -149,4 +148,71 @@ chat.participants.forEach((participants)=>{
 return res.status(200).json(new apiResponse(200,recivedmessage,"message recived sucessfully"))
 })
 
-export {getallmessages,sendmessage}
+
+const deleteMessage=asyncHandler(async(req,res)=>{
+
+
+    const {chatId,messageId}=req.body
+    console.log(chatId,messageId)
+
+    const chat=await Chat.findOne({
+        _id:new mongoose.Types.ObjectId(chatId),
+        participants:new mongoose.Types.ObjectId(req.user._id)
+    })
+if(!chat){
+    throw new apiError(400,"chat does not  exit")
+}
+
+const message= await Message.findOne({
+    _id:new mongoose.Types.ObjectId(messageId)
+})
+
+if(!message){
+    throw new apiError(400,"message does not exist")
+}
+
+if(message?.sender?._id.toString()!==req?.user?._id.toString()){
+    throw new apiError(400,"user not do not have authrozied to delete this messaage")
+}
+if(message.attachment.length >0){
+    message.attachment.map((assest)=>{
+
+        deleteOnCloudninary(assest.public_id)
+    })
+}
+
+await Message.deleteOne({
+    _id:new mongoose.Types.ObjectId(messageId)
+})
+
+if (chat.lastmessage && chat.lastmessage.toString() === message._id.toString()) {
+    const lastMessage = await Message.findOne(
+        { chat: chatId },
+        {},
+        { sort: { createdAt: -1 } }
+    );
+    console.log(lastMessage)
+
+    await Chat.findByIdAndUpdate(chatId, {
+        lastmessage: lastMessage ? lastMessage._id : null,
+    });
+}
+
+chat.participants.forEach((participant)=>{
+console.log(participant)
+    if(participant.toString()===req.user._id.toString()) return
+     emitSocketEvent(
+        req,
+        participant._id.toString(),
+        chatEventEnum.MESSAGE_DELETE_EVENT,
+        message
+     )
+
+})
+
+res.status(200).json(new apiResponse(200,{},"message delete sucessfully"))
+
+
+})
+
+export {getallmessages,sendmessage,deleteMessage}
