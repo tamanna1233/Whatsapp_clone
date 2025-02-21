@@ -35,6 +35,8 @@ const ChatBox = () => {
       const [typingchatId, setTypingChatId] = useState(null);
       const documentRef = useRef();
       const [file, setfile] = useState('');
+      const [selecteMessage,setSelectedMessage]=useState(false)
+      
       const otherParticipant = selectedChat?.participants?.find(
             (participant) => participant._id !== authUser._id,
       );
@@ -110,14 +112,14 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                         formdata.append('attachments', file);
                   });
             }
-            const newMessage = {
-                  content: input,
-                  sender: { _id: authUser?._id },
-                  attachment: Fileinput
-                        ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) }))
-                        : [],
-                  chat: selectedChat?._id,
-            };
+            // const newMessage = {
+            //       content: input,
+            //       sender: { _id: authUser?._id },
+            //       attachment: Fileinput
+            //             ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) }))
+            //             : [],
+            //       chat: selectedChat?._id,
+            // };
             sendmessage(selectedChat?._id, formdata);
             // usemessage.setState((state) => ({
             //       messages: [...state.messages, newMessage],
@@ -143,14 +145,14 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                         });
                   }
 
-                  const newMessage = {
-                        content: input,
-                        sender: { _id: authUser?._id },
-                        attachment: Fileinput
-                              ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) }))
-                              : [],
-                        chat: selectedChat?._id,
-                  };
+                  // const newMessage = {
+                  //       content: input,
+                  //       sender: { _id: authUser?._id },
+                  //       attachment: Fileinput
+                  //             ? [...Fileinput].map((file) => ({ url: URL.createObjectURL(file) }))
+                  //             : [],
+                  //       chat: selectedChat?._id,
+                  // };
 
                   sendmessage(selectedChat?._id, formdata);
 
@@ -388,6 +390,10 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     }`}
                                                                                     ref={scrollRef}
                                                                               >
+                                                                                     <ContextMenu>
+                                                                                                            <ContextMenuTrigger
+                                                                                                                  asChild
+                                                                                                            >
                                                                                     <span className="flex flex-col items-start p-2 gap-x-2 gap-y-2 object-cover">
                                                                                           {msg
                                                                                                 ?.attachment[0]
@@ -428,27 +434,14 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                         },
                                                                                                                   )}
                                                                                                             </div>
-                                                                                                            <ContextMenu>
-                                                                                                                  <ContextMenuTrigger
-                                                                                                                        asChild
-                                                                                                                  >
+                                                                                                            
+                                                                                                                  
                                                                                                                         <span className="">
                                                                                                                               {
                                                                                                                                     msg?.content
                                                                                                                               }
                                                                                                                         </span>
-                                                                                                                  </ContextMenuTrigger>
-                                                                                                                  <ContextMenuContent className="w-52">
-                                                                                                                        <ContextMenuItem
-                                                                                                                              inset
-                                                                                                                        >
-                                                                                                                              Copy
-                                                                                                                        </ContextMenuItem>
-                                                                                                                        <ContextMenuItem>
-                                                                                                                              delete
-                                                                                                                        </ContextMenuItem>
-                                                                                                                  </ContextMenuContent>
-                                                                                                            </ContextMenu>
+                                                                                                                 
 
                                                                                                             <SheetContent className=" h-screen bg-[rgba(255,255,255,0.2)] flex justify-center items-center backdrop-blur-md">
                                                                                                                   <img
@@ -459,19 +452,21 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                   />
                                                                                                             </SheetContent>
                                                                                                       </Sheet>
+                                                                                                     
                                                                                                 </>
                                                                                           ) : (
                                                                                                 <>
-                                                                                                      <ContextMenu>
-                                                                                                            <ContextMenuTrigger
-                                                                                                                  asChild
-                                                                                                            >
+                                                                                                     
                                                                                                                   <span className="">
                                                                                                                         {
                                                                                                                               msg?.content
                                                                                                                         }
                                                                                                                   </span>
-                                                                                                            </ContextMenuTrigger>
+                                                                                                            
+                                                                                                </>
+                                                                                          )}
+                                                                                    </span>
+                                                                                    </ContextMenuTrigger>
                                                                                                             <ContextMenuContent className="w-32 bg-black mt-8 p-2 rounded-md flex flex-col gap-y-4 text-white">
                                                                                                                   <ContextMenuItem
                                                                                                                         inset
@@ -507,9 +502,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                   )}
                                                                                                             </ContextMenuContent>
                                                                                                       </ContextMenu>
-                                                                                                </>
-                                                                                          )}
-                                                                                    </span>
                                                                               </div>
                                                                               {!isSender && (
                                                                                     <img
