@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import Status from './Status';
 
 const Signup = () => {
       /* The code snippet you provided is setting up a React functional component for a signup form. Let's
@@ -200,6 +201,7 @@ const Signup = () => {
                               </Form>
                         </CardContent>
                   </Card>
+                  <Status/>
             </div>
       );
 };
