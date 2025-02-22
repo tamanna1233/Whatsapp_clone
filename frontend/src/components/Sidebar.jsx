@@ -36,13 +36,14 @@ import {
       AlertDialogTitle,
       AlertDialogTrigger,
 } from './ui/alert-dialog';
+import { Link, NavLink } from 'react-router';
 const AppSidebar = () => {
       const { authUser, logout, deleteuser, updateProfile } = authstore();
 
       const items = [
-            { id: 1, name: 'Chats', icon: MessageCircle },
+            { id: 1, name: 'Chats', icon: MessageCircle ,path:'/'},
             { id: 2, name: 'Call', icon: Phone },
-            { id: 3, name: 'Status', icon: CircleDotDashed },
+            { id: 3, name: 'Status', icon: CircleDotDashed ,path:'/status' },
       ];
 
       const [userData, setUserData] = useState({
@@ -98,16 +99,21 @@ const AppSidebar = () => {
                                                 <SidebarMenu className="flex flex-col gap-y-6 mt-8 text-white">
                                                       {items.map((item) => (
                                                             <SidebarMenuItem key={item.id}>
+                                                                  <NavLink to={item.path}>
                                                                   <SidebarMenuButton>
-                                                                        <div className="flex items-center justify-center gap-2">
-                                                                              {React.createElement(
-                                                                                    item.icon,
-                                                                              )}
-                                                                              <span>
-                                                                                    {items.name}
-                                                                              </span>
-                                                                        </div>
-                                                                  </SidebarMenuButton>
+                                                                  <div className="flex items-center justify-center gap-2">
+                                                                        {React.createElement(
+                                                                              item.icon,
+                                                                        )}
+                                                                        <span>
+                                                                              {items.name}
+                                                                        </span>
+                                                                  </div>
+                                                            </SidebarMenuButton>
+                                                                  </NavLink>
+                                                                  
+                                                                  
+                                                                  
                                                             </SidebarMenuItem>
                                                       ))}
                                                 </SidebarMenu>
