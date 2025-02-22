@@ -211,7 +211,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7'
                                                                               }
                                                                               alt=""
-                                                                              className="w-10 h-10 rounded-full"
+                                                                              className="w-10 h-10 rounded-full object-cover"
                                                                         />
                                                                   </DropdownMenuTrigger>
                                                                   <DropdownMenuContent className="p-0 ">
@@ -251,7 +251,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                 >
                                                                                                       <Card className="m-0 p-0 bg-transparent rounded-none border-none">
                                                                                                             <ScrollArea className="h-96">
-                                                                                                                  <CardHeader className=" flex flex-col items-center text-white">
+                                                                                                                  <CardHeader className=" flex flex-col items-center text-white ">
                                                                                                                         <img
                                                                                                                               src={
                                                                                                                                     otherParticipant
@@ -259,7 +259,7 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                                                           ?.url ||
                                                                                                                                     'https://th.bing.com/th/id/OIP.7O4_GREtLbxqPdJCTmfatQHaHa?w=210&h=210&c=7&r=0&o=5&dpr=1.3&pid=1.7'
                                                                                                                               }
-                                                                                                                              className="h-32 w-32 rounded-full p-0"
+                                                                                                                              className="h-32 w-32 rounded-full p-0 object-cover"
                                                                                                                         />
                                                                                                                         <span>
                                                                                                                               {String(
