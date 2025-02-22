@@ -65,8 +65,10 @@ from the file `user.routes.js` located in the `router` directory. */
 import userRouter from './router/user.routes.js';
 import chatRouter from './router/chat.routes.js';
 import messageRouter from "./router/message.routes.js"
+import statusRouter from './router/status.routes.js'
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/chat', chatRouter);
 app.use('/api/v1/message', messageRouter);
+app.use('/api/v1/status',statusRouter);
 
 export default server;
