@@ -6,6 +6,7 @@ import { instalizeSocket } from './scoket/index.js';
 import cookieParser from 'cookie-parser';
 import logger from './logger.js';
 import morgan from 'morgan';
+import cron from "node-cron"
 /* This code snippet is setting up a basic Express server with Socket.IO integration. Here's a
 breakdown of what each part does: */
 const app = express();
@@ -66,9 +67,45 @@ import userRouter from './router/user.routes.js';
 import chatRouter from './router/chat.routes.js';
 import messageRouter from "./router/message.routes.js"
 import statusRouter from './router/status.routes.js'
+import { Status } from './Models/status.model.js';
+import { deleteOnCloudninary } from './utils/cloudnariy.js';
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/chat', chatRouter);
 app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/status',statusRouter);
+
+
+cron.schedule("0 * * * *", async () => {
+    try {
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+  
+      // Step 1: Find expired statuses
+      const expiredStatuses = await Status.find({ createdAt: { $lt: cutoff } });
+  
+      if (expiredStatuses.length === 0) {
+        console.log("No old statuses to delete");
+        return;
+      }
+  
+      // Step 2: Delete media from Cloudinary
+      for (const status of expiredStatuses) {
+        if (status.content && status.content.public_id) {
+          try {
+            await deleteOnCloudninary(status.content.public_id);
+            console.log(`Deleted from Cloudinary: ${status.content.public_id}`);
+          } catch (err) {
+            console.error(`Failed to delete ${status.content.public_id} from Cloudinary:`, err);
+          }
+        }
+      }
+  
+      // Step 3: Delete from MongoDB
+      await Status.deleteMany({ createdAt: { $lt: cutoff } });
+  
+      console.log("Old statuses deleted successfully");
+    } catch (error) {
+      console.error("Error deleting old statuses:", error);
+    }
+  });
 
 export default server;

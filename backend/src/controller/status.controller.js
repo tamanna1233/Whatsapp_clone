@@ -43,7 +43,7 @@ const deleteStatus = asyncHandler(async (req, res) => {
 
 const content = await Status.findById(statusId)
 if(!content){
-    consol.log("status id not found")
+    console.log("status id not found")
 }
 await deleteOnCloudninary(content.content.public_id)
 
@@ -53,7 +53,7 @@ await deleteOnCloudninary(content.content.public_id)
         return res.status(404).json({ message: 'Status not found' });
     }
 
-    return res.status(200).json(new apiResponse(200, 'Status deleted successfully'));
+    return res.status(200).json(new apiResponse(200, {},'Status deleted successfully'));
 });
 
 
@@ -63,34 +63,63 @@ const getAllStatus=asyncHandler(async(req,res)=>{
   if(!id){
     throw new apiError(400,"unathorised user")
   }
-const Status= await Chat.aggregate([
-    {$match:{participants:new mongoose.Types.ObjectId(id) }},
-    {$unwind:"$participants"},
-    {$match:{participants: {$ne :new mongoose.Types.ObjectId(id)}}},
-    {$group:{_id:"$participants"}},
-    {$lookup:{from:"users",localField:"_id",foreignField:"_id",as:"userInfo"},
-    pipeline: [
-        {
-          $lookup: {
-            from: "status",
-            localField: "Statuses", // Assuming "Statuses" is an array of ObjectIds
+  const Status = await Chat.aggregate([
+    { $match: { participants: new mongoose.Types.ObjectId(id) } },
+    { $unwind: "$participants" },
+    { $match: { participants: { $ne: new mongoose.Types.ObjectId(id) } } },
+    { $group: { _id: "$participants" } },
+    {
+        $lookup: {
+            from: "users",
+            localField: "_id",
             foreignField: "_id",
-            as: "statusinfo"
-          }
-        },
-        { $unwind: { path: "$statusinfo", preserveNullAndEmptyArrays: true } }, // Unwind status array safely
-        {
-          $project: {
-            _id: 1,
-            content: "$statusinfo.content.url", // Extracting content URL
-            text: "$statusinfo.text" // Extracting text
-          }
+            as: "userInfo"
         }
-      ]},
-    {$unwind:"$userInfo"},
-    
-    {$project:{_id:1,name:"$userInfo.name",status:"$userInfo.statusinfo"}}
-])
+    },
+    { $unwind: "$userInfo" },
+    {
+        $lookup: {
+            from: "status",
+            localField: "userInfo.statuses",
+            foreignField: "_id",
+            as: "status"
+        }
+    },
+    {
+        $match: {
+            "status.content.url": { $exists: true, $ne: null }
+        }
+    },
+    {
+        $addFields: {
+            latestStatus: {
+                $arrayElemAt: [
+                    { $sortArray: { input: "$status", sortBy: { createdAt: -1 } } }, // Sort by latest createdAt
+                    0
+                ]
+            }
+        }
+    },
+    {
+        $project: {
+            _id: 1,
+            name: "$userInfo.name",
+            profile: "$userInfo.profilePic.url",
+            content: "$status.content.url", 
+            statustime:{$map:{input:"$status",as:"s",in:{$dateToString:{format:"%H:%M",date:"$$s.createdAt",timezone:"Asia/Kolkata"}}}},
+            text: "$status.text",
+            latestTime: {
+                $dateToString: {
+                    format: "%H:%M ",  // 12-hour format with AM/PM
+                    date: "$latestStatus.createdAt",
+                    timezone: "Asia/Kolkata"
+                }
+            }
+        }
+    }
+]);
+
+
 
 if(!Status){
     throw new apiError(500,"status not found")
@@ -106,6 +135,37 @@ const getmystatus=asyncHandler(async(req,res)=>{
     if(!id){
         throw new apiError(400,"user id is required")
     }
+    const status=await User.aggregate([
+      {$match:{_id:id}},
+      {
+        $lookup:{
+          from:"status",
+          localField:"statuses",
+          foreignField:"_id",
+          as:"status"
+        }
+      },
+      {$unwind:"$status"},
+      {
+        $project:{
+          url:"$status.content.url",
+          text:"$status.text",
+          statusId:"$status._id"
+
+        }
+      }
+
+    ])
+    if (!status) {
+      throw new apiError(400,"status not found")
+      
+    }
+
+    return res.status(200).json(new apiResponse(200,status,"sucess"))
+
+
+
+
 })
 
-export {uploadStatus,deleteStatus,getAllStatus}
+export {uploadStatus,deleteStatus,getAllStatus,getmystatus}

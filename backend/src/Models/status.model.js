@@ -13,6 +13,7 @@ const statusSchema = new Schema(
             },
         },
         text: { type: String, lowercase: true, trim: true },
+        createdAt: { type: Date, default: Date.now, expires: "24h" }
     },
     {
         timestamps: true,
