@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import Stories from "react-insta-stories";
 import {FcNext,FcPrevious} from "react-icons/fc"
-const Statusplayer = ({ stories }) => {
+const Statusplayer = ({ stories ,closeplayer}) => {
 
   const newStories=stories.content.map((url, index) => ({
     url,
+    type: url.endsWith(".mp4") || url.endsWith(".webm") ? "video" : "image", 
     header: {
       heading: stories.name,
       subheading: stories.statustime[index],
@@ -45,6 +46,10 @@ console.log(currentIndex)
             setCurrentIndex(index + 1);
           }
         }}
+        onNext={() => setCurrentIndex((prev) => prev + 1)}
+  onPrevious={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+  keyboardNavigation={true}
+  onAllStoriesEnd={closeplayer}
       />
 
       {/* Previous Button */}

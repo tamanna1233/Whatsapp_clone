@@ -34,6 +34,7 @@ const Status = () => {
   const closeStatusPlayer = () => {
     setSelectedStatus(null);
   };
+  console.log(myStatus[0])
 
   return (
     <>
@@ -59,6 +60,7 @@ const Status = () => {
                 className={`h-16 w-16 rounded-full object-cover ${
                   myStatus.length > 0 ? "border-green-600 border-4" : ""
                 }`}
+                onClick={()=>handleStories(myStatus[0])}
               />
               <div className="bg-teal-900 absolute bottom-0 right-0 h-6 w-6 rounded-full flex justify-center items-center">
                 <Plus className="text-white" size={22} />
@@ -102,7 +104,7 @@ const Status = () => {
       {/* Status Player Modal */}
       {selectedStatus && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-          <Statusplayer stories={selectedStatus} />
+          <Statusplayer stories={selectedStatus}  closeplayer={closeStatusPlayer}/>
           <button
             className="absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg"
             onClick={closeStatusPlayer}

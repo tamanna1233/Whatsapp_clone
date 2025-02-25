@@ -145,13 +145,31 @@ const getmystatus=asyncHandler(async(req,res)=>{
           as:"status"
         }
       },
-      {$unwind:"$status"},
+      {
+        $addFields: {
+            latestStatus: {
+                $arrayElemAt: [
+                    { $sortArray: { input: "$status", sortBy: { createdAt: -1 } } }, // Sort by latest createdAt
+                    0
+                ]
+            }
+        }
+    },
       {
         $project:{
-          url:"$status.content.url",
+          content:"$status.content.url",
           text:"$status.text",
-          statusId:"$status._id"
-
+          statusId:"$status._id",
+          name:1,
+          statustime:{$map:{input:"$status",as:"s",in:{$dateToString:{format:"%H:%M",date:"$$s.createdAt",timezone:"Asia/Kolkata"}}}},
+          latestTime: {
+            $dateToString: {
+                format: "%H:%M ",  // 12-hour format with AM/PM
+                date: "$latestStatus.createdAt",
+                timezone: "Asia/Kolkata"
+            }
+        },
+        profile:"$profilePic.url"
         }
       }
 
