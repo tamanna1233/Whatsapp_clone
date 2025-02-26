@@ -106,6 +106,7 @@ const getAllStatus=asyncHandler(async(req,res)=>{
             name: "$userInfo.name",
             profile: "$userInfo.profilePic.url",
             content: "$status.content.url", 
+            statusId:"$status._id",
             statustime:{$map:{input:"$status",as:"s",in:{$dateToString:{format:"%H:%M",date:"$$s.createdAt",timezone:"Asia/Kolkata"}}}},
             text: "$status.text",
             latestTime: {

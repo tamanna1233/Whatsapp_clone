@@ -24,6 +24,7 @@ import {
       ContextMenuItem,
       ContextMenuTrigger,
 } from '@radix-ui/react-context-menu';
+import { MdClose } from 'react-icons/md';
 const ChatBox = () => {
       /* The above code snippet is written in JavaScript using React. It appears to be a component or
     function that is handling chat functionality. Here is a breakdown of what the code is doing: */
@@ -35,8 +36,8 @@ const ChatBox = () => {
       const [typingchatId, setTypingChatId] = useState(null);
       const documentRef = useRef();
       const [file, setfile] = useState('');
-      const [selecteMessage,setSelectedMessage]=useState(false)
-      
+      const [selecteMessage, setSelectedMessage] = useState(false);
+
       const otherParticipant = selectedChat?.participants?.find(
             (participant) => participant._id !== authUser._id,
       );
@@ -190,7 +191,11 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                   setfile(fileObjects);
             }
       };
-      console.log('fileurl', file);
+
+      const handelclose=()=>{
+            setselectedImage(null)
+      }
+
 
       return (
             <>
@@ -390,118 +395,103 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     }`}
                                                                                     ref={scrollRef}
                                                                               >
-                                                                                     <ContextMenu>
-                                                                                                            <ContextMenuTrigger
-                                                                                                                  asChild
-                                                                                                            >
-                                                                                    <span className="flex flex-col items-start p-2 gap-x-2 gap-y-2 object-cover">
-                                                                                          {msg
-                                                                                                ?.attachment[0]
-                                                                                                ?.url ? (
-                                                                                                <>
-                                                                                                      <Sheet>
-                                                                                                            <div
-                                                                                                                  className={
-                                                                                                                        msg
-                                                                                                                              ?.attachment
-                                                                                                                              .length >
-                                                                                                                        2
-                                                                                                                              ? 'grid grid-cols-2 gap-3 '
-                                                                                                                              : 'flex justify-center items-center gap-3'
-                                                                                                                  }
-                                                                                                            >
-                                                                                                                  {msg?.attachment?.map(
-                                                                                                                        (
-                                                                                                                              file,
-                                                                                                                        ) => {
-                                                                                                                              return (
-                                                                                                                                    <SheetTrigger
-                                                                                                                                          asChild
-                                                                                                                                    >
-                                                                                                                                          <img
-                                                                                                                                                src={
-                                                                                                                                                      file?.url
-                                                                                                                                                }
-                                                                                                                                                className="w-32 h-32 object-cover cursor-pointer"
-                                                                                                                                                onClick={() =>
-                                                                                                                                                      setselectedImage(
-                                                                                                                                                            file.url,
-                                                                                                                                                      )
-                                                                                                                                                }
-                                                                                                                                          />
-                                                                                                                                    </SheetTrigger>
-                                                                                                                              );
-                                                                                                                        },
-                                                                                                                  )}
-                                                                                                            </div>
-                                                                                                            
-                                                                                                                  
+                                                                                    <ContextMenu>
+                                                                                          <ContextMenuTrigger
+                                                                                                asChild
+                                                                                          >
+                                                                                                <span className="flex flex-col items-start p-2 gap-x-2 gap-y-2 object-cover">
+                                                                                                      {msg
+                                                                                                            ?.attachment[0]
+                                                                                                            ?.url ? (
+                                                                                                            <>
+                                                                                                                
+                                                                                                                        <div
+                                                                                                                              className={
+                                                                                                                                    msg
+                                                                                                                                          ?.attachment
+                                                                                                                                          .length >
+                                                                                                                                    2
+                                                                                                                                          ? 'grid grid-cols-2 gap-3 '
+                                                                                                                                          : 'flex justify-center items-center gap-3'
+                                                                                                                              }
+                                                                                                                        >
+                                                                                                                              {msg?.attachment?.map(
+                                                                                                                                    (
+                                                                                                                                          file,
+                                                                                                                                    ) => {
+                                                                                                                                          return (
+                                                                                                                                                
+                                                                                                                                                      <img
+                                                                                                                                                            src={
+                                                                                                                                                                  file?.url
+                                                                                                                                                            }
+                                                                                                                                                            className="w-32 h-32 object-cover cursor-pointer"
+                                                                                                                                                            onClick={() =>
+                                                                                                                                                                  setselectedImage(
+                                                                                                                                                                        file.url,
+                                                                                                                                                                  )
+                                                                                                                                                            }
+                                                                                                                                                      />
+                                                                                                                                               
+                                                                                                                                          );
+                                                                                                                                    },
+                                                                                                                              )}
+                                                                                                                        </div>
+
                                                                                                                         <span className="">
                                                                                                                               {
                                                                                                                                     msg?.content
                                                                                                                               }
                                                                                                                         </span>
-                                                                                                                 
 
-                                                                                                            <SheetContent className=" h-screen bg-[rgba(255,255,255,0.2)] flex justify-center items-center backdrop-blur-md">
-                                                                                                                  <img
-                                                                                                                        src={
-                                                                                                                              selectedImage
-                                                                                                                        }
-                                                                                                                        className="w-96 h-96 object-contain"
-                                                                                                                  />
-                                                                                                            </SheetContent>
-                                                                                                      </Sheet>
-                                                                                                     
-                                                                                                </>
-                                                                                          ) : (
-                                                                                                <>
-                                                                                                     
+                                                                                                                        
+                                                                                                            </>
+                                                                                                      ) : (
+                                                                                                            <>
                                                                                                                   <span className="">
                                                                                                                         {
                                                                                                                               msg?.content
                                                                                                                         }
                                                                                                                   </span>
-                                                                                                            
-                                                                                                </>
-                                                                                          )}
-                                                                                    </span>
-                                                                                    </ContextMenuTrigger>
-                                                                                                            <ContextMenuContent className="w-32 bg-black mt-8 p-2 rounded-md flex flex-col gap-y-4 text-white">
-                                                                                                                  <ContextMenuItem
-                                                                                                                        inset
-                                                                                                                  >
-                                                                                                                        Copy
-                                                                                                                  </ContextMenuItem>
-                                                                                                                  {isSender ? (
-                                                                                                                        <ContextMenuItem
-                                                                                                                              inset
-                                                                                                                              disabled
-                                                                                                                              className="text-gray-400"
-                                                                                                                        >
-                                                                                                                              delete
-                                                                                                                        </ContextMenuItem>
-                                                                                                                  ) : (
-                                                                                                                        <ContextMenuItem
-                                                                                                                              inset
-                                                                                                                              onClick={() => {
-                                                                                                                                    console.log(
-                                                                                                                                          'click',
-                                                                                                                                    );
-                                                                                                                                    deleteMessage(
-                                                                                                                                          {
-                                                                                                                                                messageId:
-                                                                                                                                                      msg._id,
-                                                                                                                                                chatId: msg.chat,
-                                                                                                                                          },
-                                                                                                                                    );
-                                                                                                                              }}
-                                                                                                                        >
-                                                                                                                              delete
-                                                                                                                        </ContextMenuItem>
-                                                                                                                  )}
-                                                                                                            </ContextMenuContent>
-                                                                                                      </ContextMenu>
+                                                                                                            </>
+                                                                                                      )}
+                                                                                                </span>
+                                                                                          </ContextMenuTrigger>
+                                                                                          <ContextMenuContent className="w-32 bg-black mt-8 p-2 rounded-md flex flex-col gap-y-4 text-white">
+                                                                                                <ContextMenuItem
+                                                                                                      inset
+                                                                                                >
+                                                                                                      Copy
+                                                                                                </ContextMenuItem>
+                                                                                                {isSender ? (
+                                                                                                      <ContextMenuItem
+                                                                                                            inset
+                                                                                                            disabled
+                                                                                                            className="text-gray-400"
+                                                                                                      >
+                                                                                                            delete
+                                                                                                      </ContextMenuItem>
+                                                                                                ) : (
+                                                                                                      <ContextMenuItem
+                                                                                                            inset
+                                                                                                            onClick={() => {
+                                                                                                                  console.log(
+                                                                                                                        'click',
+                                                                                                                  );
+                                                                                                                  deleteMessage(
+                                                                                                                        {
+                                                                                                                              messageId:
+                                                                                                                                    msg._id,
+                                                                                                                              chatId: msg.chat,
+                                                                                                                        },
+                                                                                                                  );
+                                                                                                            }}
+                                                                                                      >
+                                                                                                            delete
+                                                                                                      </ContextMenuItem>
+                                                                                                )}
+                                                                                          </ContextMenuContent>
+                                                                                    </ContextMenu>
                                                                               </div>
                                                                               {!isSender && (
                                                                                     <img
@@ -630,6 +620,18 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                               </CardContent>
                         )}
                   </Card>
+
+                  {
+                        selectedImage&&<div className='fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 '>
+                            <img src={selectedImage} alt="" className='object-contain h-[70%]  rounded-md'/>
+                                                          <button
+                                                                className="absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg"
+                                                                onClick={handelclose}
+                                                          >
+                                                                <MdClose size={35} />
+                                                          </button>
+                        </div>
+                  }
             </>
       );
 };

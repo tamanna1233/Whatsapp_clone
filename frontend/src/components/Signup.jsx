@@ -201,7 +201,7 @@ const Signup = () => {
                               </Form>
                         </CardContent>
                   </Card>
-                  <Status/>
+                  <Status />
             </div>
       );
 };

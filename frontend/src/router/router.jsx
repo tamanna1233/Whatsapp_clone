@@ -10,8 +10,7 @@ export const router = createBrowserRouter(
             <>
                   <Route path="/" element={<App />}>
                         <Route index element={<Chat />} />
-                        <Route path='/status' element={<Status/>}/>
-                        
+                        <Route path="/status" element={<Status />} />
                   </Route>
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/signin" element={<Signin />} />

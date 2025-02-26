@@ -75,7 +75,7 @@ app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/status',statusRouter);
 
 
-cron.schedule("0 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
     try {
       const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
   

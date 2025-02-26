@@ -41,9 +41,9 @@ const AppSidebar = () => {
       const { authUser, logout, deleteuser, updateProfile } = authstore();
 
       const items = [
-            { id: 1, name: 'Chats', icon: MessageCircle ,path:'/'},
+            { id: 1, name: 'Chats', icon: MessageCircle, path: '/' },
             { id: 2, name: 'Call', icon: Phone },
-            { id: 3, name: 'Status', icon: CircleDotDashed ,path:'/status' },
+            { id: 3, name: 'Status', icon: CircleDotDashed, path: '/status' },
       ];
 
       const [userData, setUserData] = useState({
@@ -100,20 +100,19 @@ const AppSidebar = () => {
                                                       {items.map((item) => (
                                                             <SidebarMenuItem key={item.id}>
                                                                   <NavLink to={item.path}>
-                                                                  <SidebarMenuButton>
-                                                                  <div className="flex items-center justify-center gap-2">
-                                                                        {React.createElement(
-                                                                              item.icon,
-                                                                        )}
-                                                                        <span>
-                                                                              {items.name}
-                                                                        </span>
-                                                                  </div>
-                                                            </SidebarMenuButton>
+                                                                        <SidebarMenuButton>
+                                                                              <div className="flex items-center justify-center gap-2">
+                                                                                    {React.createElement(
+                                                                                          item.icon,
+                                                                                    )}
+                                                                                    <span>
+                                                                                          {
+                                                                                                items.name
+                                                                                          }
+                                                                                    </span>
+                                                                              </div>
+                                                                        </SidebarMenuButton>
                                                                   </NavLink>
-                                                                  
-                                                                  
-                                                                  
                                                             </SidebarMenuItem>
                                                       ))}
                                                 </SidebarMenu>
