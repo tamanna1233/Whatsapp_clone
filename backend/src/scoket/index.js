@@ -17,6 +17,24 @@ const mountJoinChatEvent = (socket) => {
     });
 };
 
+const mountjoinVideoCallEvent = (socket) => {
+    socket.on(chatEventEnum.VIDEO_CALL_EVENT, (chatId, offer) => {
+        console.log(`User ${socket.user._id} offered a video call in chat: ${chatId}`);
+        
+        // Send the offer along with the caller's profile
+        socket.in(chatId).emit(chatEventEnum.VIDEO_CALL_OFFER_EVENT, {
+            offer,
+            caller: {
+                id: socket.user._id,
+                name: socket.user.name, // Assuming `name` exists in User model
+                avatar: socket.user.profilePic.url, // Assuming `avatar` exists in User model
+            }
+        });
+    });
+};
+
+
+
 /**
  * The function `mountParticipantTypingEvent` listens for typing events on a socket and emits them to
  * the corresponding chat room.
@@ -80,6 +98,7 @@ const instalizeSocket = (io) => {
             mountJoinChatEvent(socket);
             mountParticipantTypingEvent(socket);
             mountParticipantStoppedTypingEvent(socket);
+            mountjoinVideoCallEvent(socket)
             socket.on(chatEventEnum.DISCONNECT_EVENT, () => {
                 console.log(` user is disconnected ${socket.user._id}`);
                 if (socket?.user?._id) {

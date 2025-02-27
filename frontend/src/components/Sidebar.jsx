@@ -42,7 +42,7 @@ const AppSidebar = () => {
 
       const items = [
             { id: 1, name: 'Chats', icon: MessageCircle, path: '/' },
-            { id: 2, name: 'Call', icon: Phone },
+            { id: 2, name: 'Call', icon: Phone , path:"/call"},
             { id: 3, name: 'Status', icon: CircleDotDashed, path: '/status' },
       ];
 

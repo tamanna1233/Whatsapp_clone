@@ -55,7 +55,7 @@ const Status = () => {
                                                 src={authUser?.profilePic?.url}
                                                 alt="Profile"
                                                 className={`h-16 w-16 rounded-full object-cover ${
-                                                      myStatus.length > 0
+                                                      myStatus?.content?.length > 0
                                                             ? 'border-green-600 border-4'
                                                             : ''
                                                 }`}

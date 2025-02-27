@@ -4,6 +4,7 @@ import Signup from '@/components/Signup';
 import Signin from '@/components/Signin';
 import Chat from '@/components/pages/Chat';
 import Status from '@/components/Status';
+import Videocall from '@/components/Videocall';
 
 export const router = createBrowserRouter(
       createRoutesFromElements(
@@ -11,6 +12,7 @@ export const router = createBrowserRouter(
                   <Route path="/" element={<App />}>
                         <Route index element={<Chat />} />
                         <Route path="/status" element={<Status />} />
+
                   </Route>
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/signin" element={<Signin />} />

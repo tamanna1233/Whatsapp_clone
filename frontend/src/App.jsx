@@ -5,6 +5,7 @@ import AppSidebar from './components/Sidebar';
 import { Outlet } from 'react-router';
 import { chatEventEnum } from './constants';
 import Setting from './components/Setting';
+import Videocall from './components/Videocall';
 
 function App() {
       const { checkCurrentUser, authUser, socket } = authstore();
@@ -28,6 +29,7 @@ function App() {
                   <Setting />
                   <AppSidebar />
                   <Outlet />
+                  <Videocall/>
             </div>
       );
 }

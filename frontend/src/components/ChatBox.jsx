@@ -25,6 +25,7 @@ import {
       ContextMenuTrigger,
 } from '@radix-ui/react-context-menu';
 import { MdClose } from 'react-icons/md';
+import { usecallStore } from '@/store/useCallStore';
 const ChatBox = () => {
       /* The above code snippet is written in JavaScript using React. It appears to be a component or
     function that is handling chat functionality. Here is a breakdown of what the code is doing: */
@@ -37,7 +38,7 @@ const ChatBox = () => {
       const documentRef = useRef();
       const [file, setfile] = useState('');
       const [selecteMessage, setSelectedMessage] = useState(false);
-
+      const {startCall}= usecallStore();
       const otherParticipant = selectedChat?.participants?.find(
             (participant) => participant._id !== authUser._id,
       );
@@ -348,8 +349,8 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       <Button className="bg-transparent hover:bg-slate-300 border-none rounded-full shadow-none">
                                                             <Phone />
                                                       </Button>
-                                                      <Button className="bg-transparent  hover:bg-slate-300 border-none rounded-full shadow-none">
-                                                            <Search />
+                                                      <Button className="bg-transparent  hover:bg-slate-300 border-none rounded-full shadow-none" onClick={()=>{console.log("click"); startCall()}}>
+                                                            <FaVideo />
                                                       </Button>
                                                       <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none">
                                                             <EllipsisVertical />
