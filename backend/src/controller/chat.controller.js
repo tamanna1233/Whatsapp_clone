@@ -104,25 +104,24 @@ const createOrGetOneOnOneChat = asyncHandler(async (req, res) => {
         throw new apiError(400, "you can't chat with you self");
     }
 
-
     const chat = await Chat.aggregate([
         {
             $match: {
-              isGroupChat: false, // avoid group chats. This controller is responsible for one on one chats
-              // Also, filter chats with participants having receiver and logged in user only
-              $and: [
-                {
-                    participants: { $elemMatch: { $eq: req.user._id } },
-                },
-                {
-                    participants: {
-                    $elemMatch: { $eq: new mongoose.Types.ObjectId(reciverId) },
-                  },
-                },
-              ],
+                isGroupChat: false, // avoid group chats. This controller is responsible for one on one chats
+                // Also, filter chats with participants having receiver and logged in user only
+                $and: [
+                    {
+                        participants: { $elemMatch: { $eq: req.user._id } },
+                    },
+                    {
+                        participants: {
+                            $elemMatch: { $eq: new mongoose.Types.ObjectId(reciverId) },
+                        },
+                    },
+                ],
             },
-          },
-          ...commonChatAggerigation()
+        },
+        ...commonChatAggerigation(),
     ]);
     if (chat.length) {
         return res.status(200).json(new apiResponse(200, chat[0], 'chat retieve succesfully'));
@@ -147,52 +146,42 @@ const createOrGetOneOnOneChat = asyncHandler(async (req, res) => {
     }
     payload?.participants?.forEach((participant) => {
         if (participant._id.toString() === req.user._id.toString()) return; // don't emit the event for the logged in use as he is the one who is initiating the chat
-    
+
         // emit event to other participants with new chat as a payload
-        emitSocketEvent(
-          req,
-          participant._id?.toString(),
-          chatEventEnum.NEW_CHAT_EVENT,
-          payload
-        );
-      });
+        emitSocketEvent(req, participant._id?.toString(), chatEventEnum.NEW_CHAT_EVENT, payload);
+    });
     return res.status(200).json(new apiResponse(200, payload, 'chat retrived sucessfully'));
 });
 
-const getYourChat=asyncHandler(async(req,res)=>{
-    const userId=req.user._id 
-    const chats= await Chat.aggregate([
+const getYourChat = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const chats = await Chat.aggregate([
         {
-            $match:{
-                participants:{$elemMatch:{$eq:userId}}
-            }
-        },{
+            $match: {
+                participants: { $elemMatch: { $eq: userId } },
+            },
+        },
+        {
             $sort: {
                 updatedAt: -1,
-              }
+            },
         },
-        ...commonChatAggerigation()
-    ])
-if( chats.length <  0){
-    throw new apiError(400,"chat not found")
-}
-    res.status(200).json(new apiResponse(200,chats,"chat retrive sucessfully"))
-})
-
-const createGroup=asyncHandler(async(req,res)=>{
-
-    const{groupName,participants}=req.body
-
-    if(!(groupName && participants)){
-        throw new apiError(400,"group name and participat are required")
+        ...commonChatAggerigation(),
+    ]);
+    if (chats.length < 0) {
+        throw new apiError(400, 'chat not found');
     }
-if( participants.include(req.user._id.toString())){
-    throw new apiError(400," participants not contain group creator ");
+    res.status(200).json(new apiResponse(200, chats, 'chat retrive sucessfully'));
+});
 
+const createGroup = asyncHandler(async (req, res) => {
+    const { groupName, participants } = req.body;
 
-    
-}
-
-
-})
-export { availablechats, createOrGetOneOnOneChat ,getYourChat};
+    if (!(groupName && participants)) {
+        throw new apiError(400, 'group name and participat are required');
+    }
+    if (participants.include(req.user._id.toString())) {
+        throw new apiError(400, ' participants not contain group creator ');
+    }
+});
+export { availablechats, createOrGetOneOnOneChat, getYourChat };

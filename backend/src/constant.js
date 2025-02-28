@@ -22,25 +22,24 @@ export const chatEventEnum = Object.freeze({
     TYPING_EVENT: 'typing',
     // ? when message is deleted
     MESSAGE_DELETE_EVENT: 'messageDeleted',
-     // when a video call is initiated
-     VIDEO_CALL_EVENT: 'videoCall',
-     //when video call accepted
-     VIDEO_CALL_OFFER_EVENT:"videocCallOffer",
-     // when an video call is accepted
-     VIDEO_CALL_ACCEPT_EVENT: 'videoCallAccept',
-     // when an video call is declined
-     VIDEO_CALL_DECLINE_EVENT: 'videoCallDecline',
-     // when a video call ends
-     VIDEO_CALL_END_EVENT: 'videoCallEnd',
- 
-     // when an audio call is initiated
-     AUDIO_CALL_EVENT: 'audioCall',
-     // when an audio call is accepted
-     AUDIO_CALL_ACCEPT_EVENT: 'audioCallAccept',
-     // when an audio call is declined
-     AUDIO_CALL_DECLINE_EVENT: 'audioCallDecline',
-     // when an audio call ends
-     AUDIO_CALL_END_EVENT: 'audioCallEnd',
-    
-})
+    // when a video call is initiated
+    VIDEO_CALL_EVENT: 'videoCall',
+    //when video call accepted
+    VIDEO_CALL_OFFER_EVENT: 'videocCallOffer',
+    // when an video call is accepted
+    VIDEO_CALL_ACCEPT_EVENT: 'videoCallAccept',
+    // when an video call is declined
+    VIDEO_CALL_DECLINE_EVENT: 'videoCallDecline',
+    // when a video call ends
+    VIDEO_CALL_END_EVENT: 'videoCallEnd',
+
+    // when an audio call is initiated
+    AUDIO_CALL_EVENT: 'audioCall',
+    // when an audio call is accepted
+    AUDIO_CALL_ACCEPT_EVENT: 'audioCallAccept',
+    // when an audio call is declined
+    AUDIO_CALL_DECLINE_EVENT: 'audioCallDecline',
+    // when an audio call ends
+    AUDIO_CALL_END_EVENT: 'audioCallEnd',
+});
 export const avilableChatEvent = Object.values(chatEventEnum);

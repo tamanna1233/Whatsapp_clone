@@ -17,7 +17,7 @@ cloudinary.config({
  * deletes an image from Cloudinary based on the `public_id` provided, or logs an error message
  */
 const uploadOnCloudinary = async (localFilePath) => {
-    console.log("local ",localFilePath)
+    console.log('local ', localFilePath);
     try {
         if (!localFilePath) return null;
         const response = await cloudinary.uploader.upload(localFilePath, {
