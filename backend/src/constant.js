@@ -27,9 +27,9 @@ export const chatEventEnum = Object.freeze({
      //when video call accepted
      VIDEO_CALL_OFFER_EVENT:"videocCallOffer",
      // when an video call is accepted
-     VIDEO_CALL_ACCEPT_EVENT: 'audioCallAccept',
+     VIDEO_CALL_ACCEPT_EVENT: 'videoCallAccept',
      // when an video call is declined
-     VIDEO_CALL_DECLINE_EVENT: 'audioCallDecline',
+     VIDEO_CALL_DECLINE_EVENT: 'videoCallDecline',
      // when a video call ends
      VIDEO_CALL_END_EVENT: 'videoCallEnd',
  
