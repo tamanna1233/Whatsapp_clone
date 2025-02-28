@@ -4,6 +4,7 @@ import Signup from '@/components/Signup';
 import Signin from '@/components/Signin';
 import Chat from '@/components/pages/Chat';
 import Status from '@/components/Status';
+import Videocall from '@/components/Videocall';
 
 export const router = createBrowserRouter(
       createRoutesFromElements(

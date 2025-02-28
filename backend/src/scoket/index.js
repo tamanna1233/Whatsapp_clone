@@ -17,6 +17,40 @@ const mountJoinChatEvent = (socket) => {
     });
 };
 
+const mountjoinVideoCallEvent = (socket) => {
+    socket.on(chatEventEnum.VIDEO_CALL_OFFER_EVENT, (userId, offer) => {
+        console.log(`User ${socket.user._id} offered a video call in chat: ${userId}`);
+        
+        // Send the offer along with the caller's profile
+        socket.in(userId).emit(chatEventEnum.VIDEO_CALL_OFFER_EVENT, {
+            offer,
+            caller: {
+                id: socket.user._id,
+                name: socket.user.name, // Assuming `name` exists in User model
+                avatar: socket.user.profilePic.url, // Assuming `avatar` exists in User model
+            }
+        });
+    });
+};
+
+const mountVideoCallDeclinEvent=(socket)=>{
+socket.on(chatEventEnum.VIDEO_CALL_DECLINE_EVENT,(userId)=>{
+    console.log(`videocall is delcine by ${socket.user.name}`)
+    socket.in(userId).emit(chatEventEnum.VIDEO_CALL_DECLINE_EVENT)
+})
+
+}
+
+const mountAcceptVideoCall=(socket)=>{
+    socket.on(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT,(callerId,offer)=>{
+        console.log(`${socket.user.name} accpet vediocall from  callerId :${callerId}`)
+
+        socket.in(callerId).emit(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT,callerId,offer)
+        
+    })
+}
+
+
 /**
  * The function `mountParticipantTypingEvent` listens for typing events on a socket and emits them to
  * the corresponding chat room.
@@ -80,6 +114,9 @@ const instalizeSocket = (io) => {
             mountJoinChatEvent(socket);
             mountParticipantTypingEvent(socket);
             mountParticipantStoppedTypingEvent(socket);
+            mountjoinVideoCallEvent(socket)
+            mountVideoCallDeclinEvent(socket)
+            mountAcceptVideoCall(socket)
             socket.on(chatEventEnum.DISCONNECT_EVENT, () => {
                 console.log(` user is disconnected ${socket.user._id}`);
                 if (socket?.user?._id) {

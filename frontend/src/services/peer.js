@@ -21,6 +21,21 @@ class PeerServices {
                   return offer;
             }
       }
+      async getAnswer(offer) {
+            if (this.peer) {
+                  await this.peer.setRemoteDescription(offer);
+                  const ans = await this.peer.createAnswer();
+                  await this.peer.setLocalDescription(ans);
+                  return ans;
+            }
+      }
+
+      async setLocalDescription(ans){
+            if(this.peer){
+                  await this.peer.setRemoteDescription(new RTCSessionDescription(ans))
+            }
+
+      }
 }
 
 export default new PeerServices();

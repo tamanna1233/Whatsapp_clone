@@ -25,6 +25,7 @@ import {
       ContextMenuTrigger,
 } from '@radix-ui/react-context-menu';
 import { MdClose } from 'react-icons/md';
+import { usecallStore } from '@/store/useCallStore';
 const ChatBox = () => {
       /* The above code snippet is written in JavaScript using React. It appears to be a component or
     function that is handling chat functionality. Here is a breakdown of what the code is doing: */
@@ -37,9 +38,9 @@ const ChatBox = () => {
       const documentRef = useRef();
       const [file, setfile] = useState('');
       const [selecteMessage, setSelectedMessage] = useState(false);
-
+      const { startCall } = usecallStore();
       const otherParticipant = selectedChat?.participants?.find(
-            (participant) => participant._id !== authUser._id,
+            (participant) => participant?._id !== authUser?._id,
       );
       const [selectedImage, setselectedImage] = useState('');
       /* The above code is a `useEffect` hook in a React component that is setting up event listeners for
@@ -65,7 +66,7 @@ const ChatBox = () => {
             socket.on(chatEventEnum.MESSAGE_DELETE_EVENT, (message) => {
                   console.log('mesage delete ', message);
                   usemessage.setState((state) => ({
-                        messages: state.messages.filter((msg) => msg._id !== message._id),
+                        messages: state.messages.filter((msg) => msg?._id !== message?._id),
                   }));
             });
 
@@ -192,10 +193,9 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
             }
       };
 
-      const handelclose=()=>{
-            setselectedImage(null)
-      }
-
+      const handelclose = () => {
+            setselectedImage(null);
+      };
 
       return (
             <>
@@ -348,8 +348,14 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                       <Button className="bg-transparent hover:bg-slate-300 border-none rounded-full shadow-none">
                                                             <Phone />
                                                       </Button>
-                                                      <Button className="bg-transparent  hover:bg-slate-300 border-none rounded-full shadow-none">
-                                                            <Search />
+                                                      <Button
+                                                            className="bg-transparent  hover:bg-slate-300 border-none rounded-full shadow-none"
+                                                            onClick={() => {
+                                                                  console.log('click');
+                                                                  startCall(otherParticipant._id);
+                                                            }}
+                                                      >
+                                                            <FaVideo />
                                                       </Button>
                                                       <Button className="bg-transparent hover:bg-slate-300 hover:rounded-xl border-none rounded-full shadow-none">
                                                             <EllipsisVertical />
@@ -404,47 +410,42 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                                             ?.attachment[0]
                                                                                                             ?.url ? (
                                                                                                             <>
-                                                                                                                
-                                                                                                                        <div
-                                                                                                                              className={
-                                                                                                                                    msg
-                                                                                                                                          ?.attachment
-                                                                                                                                          .length >
-                                                                                                                                    2
-                                                                                                                                          ? 'grid grid-cols-2 gap-3 '
-                                                                                                                                          : 'flex justify-center items-center gap-3'
-                                                                                                                              }
-                                                                                                                        >
-                                                                                                                              {msg?.attachment?.map(
-                                                                                                                                    (
-                                                                                                                                          file,
-                                                                                                                                    ) => {
-                                                                                                                                          return (
-                                                                                                                                                
-                                                                                                                                                      <img
-                                                                                                                                                            src={
-                                                                                                                                                                  file?.url
-                                                                                                                                                            }
-                                                                                                                                                            className="w-32 h-32 object-cover cursor-pointer"
-                                                                                                                                                            onClick={() =>
-                                                                                                                                                                  setselectedImage(
-                                                                                                                                                                        file.url,
-                                                                                                                                                                  )
-                                                                                                                                                            }
-                                                                                                                                                      />
-                                                                                                                                               
-                                                                                                                                          );
-                                                                                                                                    },
-                                                                                                                              )}
-                                                                                                                        </div>
+                                                                                                                  <div
+                                                                                                                        className={
+                                                                                                                              msg
+                                                                                                                                    ?.attachment
+                                                                                                                                    .length >
+                                                                                                                              2
+                                                                                                                                    ? 'grid grid-cols-2 gap-3 '
+                                                                                                                                    : 'flex justify-center items-center gap-3'
+                                                                                                                        }
+                                                                                                                  >
+                                                                                                                        {msg?.attachment?.map(
+                                                                                                                              (
+                                                                                                                                    file,
+                                                                                                                              ) => {
+                                                                                                                                    return (
+                                                                                                                                          <img
+                                                                                                                                                src={
+                                                                                                                                                      file?.url
+                                                                                                                                                }
+                                                                                                                                                className="w-32 h-32 object-cover cursor-pointer"
+                                                                                                                                                onClick={() =>
+                                                                                                                                                      setselectedImage(
+                                                                                                                                                            file.url,
+                                                                                                                                                      )
+                                                                                                                                                }
+                                                                                                                                          />
+                                                                                                                                    );
+                                                                                                                              },
+                                                                                                                        )}
+                                                                                                                  </div>
 
-                                                                                                                        <span className="">
-                                                                                                                              {
-                                                                                                                                    msg?.content
-                                                                                                                              }
-                                                                                                                        </span>
-
-                                                                                                                        
+                                                                                                                  <span className="">
+                                                                                                                        {
+                                                                                                                              msg?.content
+                                                                                                                        }
+                                                                                                                  </span>
                                                                                                             </>
                                                                                                       ) : (
                                                                                                             <>
@@ -621,17 +622,21 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                         )}
                   </Card>
 
-                  {
-                        selectedImage&&<div className='fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 '>
-                            <img src={selectedImage} alt="" className='object-contain h-[70%]  rounded-md'/>
-                                                          <button
-                                                                className="absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg"
-                                                                onClick={handelclose}
-                                                          >
-                                                                <MdClose size={35} />
-                                                          </button>
+                  {selectedImage && (
+                        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 ">
+                              <img
+                                    src={selectedImage}
+                                    alt=""
+                                    className="object-contain h-[70%]  rounded-md"
+                              />
+                              <button
+                                    className="absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg"
+                                    onClick={handelclose}
+                              >
+                                    <MdClose size={35} />
+                              </button>
                         </div>
-                  }
+                  )}
             </>
       );
 };
