@@ -375,10 +375,11 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                   msg?.sender?._id !==
                                                                   authUser?._id;
                                                             return (
-                                                                  <>
+                                                                
                                                                         <div
-                                                                              key={index}
+                                                                              key={msg._id}
                                                                               className={`flex  items-center w-full ${isSender ? 'justify-start' : 'justify-end'} `}
+                                                                           
                                                                         >
                                                                               {isSender && (
                                                                                     <img
@@ -505,7 +506,6 @@ The `useEffect` hook will run this code block whenever the `selectedChat?._id` v
                                                                                     />
                                                                               )}
                                                                         </div>
-                                                                  </>
                                                             );
                                                       })}
                                                 {typing && typingchatId === selectedChat?._id && (
