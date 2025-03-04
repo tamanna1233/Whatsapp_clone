@@ -21,8 +21,7 @@ const IncomingVideocall = ({ caller, offer, onClose }) => {
             console.log('Accepting call with offer:', offer);
             const acceptoffer = await peer.getAnswer(offer);
             console.log(acceptoffer);
-            socket.emit(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, caller.id, acceptoffer);
-            acceptCall();
+            acceptCall(caller,acceptoffer);
             
             onClose();
       }, []);

@@ -98,7 +98,7 @@ const mountnegoation=(socket)=>{
 const mountnegoationdone=(socket)=>{
     socket.on(chatEventEnum.NAGONETIONDONE,(userId,ans)=>{
         console.log(`nogation done ${userId}`)
-        console.log(`socketId${socket.user._id} user${userId}`)
+        console.log(`socketId ${socket.user._id} user${userId},ans:${ans}`)
 
 socket.in(userId).emit(chatEventEnum.FINALNAGOTION,ans)
 

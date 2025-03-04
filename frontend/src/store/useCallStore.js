@@ -10,6 +10,7 @@ export const usecallStore = create((set, get) => ({
       isVideo: true,
       Stream: null,
       error: false,
+      callAccpeted:true,
     /* The `startCall` function in the provided code is responsible for initiating a video call. Here
     is a breakdown of what it does: */
       startCall: async (userId) => {
@@ -17,9 +18,8 @@ export const usecallStore = create((set, get) => ({
             if (!socket) {
                   return;
             }
-            const offer = await peer.getoffer();
-            console.log(offer);
-            set({ isInCall: true, isMinimized: false, userId: userId });
+            const offer = await peer.getoffer();           
+            set({ isInCall: true, isMinimized: false, userId: userId ,callAccpeted:false});
 
             socket.emit(chatEventEnum.VIDEO_CALL_OFFER_EVENT, userId, offer);
       },
@@ -27,7 +27,11 @@ export const usecallStore = create((set, get) => ({
     the user has accepted the incoming call. It updates the state by setting `isInCall` to `true`
     and `isMinimized` to `false`, which means that the user is currently in a call and the call
     window is not minimized. */
-      acceptCall: () => {
+      acceptCall: (caller,acceptoffer) => {
+            const socket = authstore.getState().socket;
+            if(socket){
+                  socket.emit(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, caller.id, acceptoffer);  
+            }
             set({ isInCall: true, isMinimized: false });
       },
     /* The `endCall` function in the provided code is responsible for ending a call. Here is a
@@ -89,6 +93,10 @@ export const usecallStore = create((set, get) => ({
       }
   },
   
+  setCallAccepted:()=>{
+      console.log("call accpeted")
+ set({callAccpeted:true})
+  },
 
    /* The `startStream` function in the provided code is responsible for starting a media stream for
    video and audio. Here is a breakdown of what it does: */
@@ -99,8 +107,7 @@ export const usecallStore = create((set, get) => ({
                   const mainStream = await navigator.mediaDevices.getUserMedia({
                         video: get().isVideo,
                         audio: get().isAudio,
-                  });
-                  console.log(mainStream);
+                  }); 
                   set({ Stream: mainStream });
             } catch (error) {
                   console.log(` error while streaming message :${error.message}`);
@@ -112,7 +119,6 @@ export const usecallStore = create((set, get) => ({
    peer during a call. Here is a breakdown of what it does: */
       sendStream: async () => {
             const stream = get().Stream;
-            console.log(stream)
             if (stream ) {
                   stream.getTracks().forEach((track) => {
                         if (!peer.peer.getSenders().find(sender => sender.track === track)) {
