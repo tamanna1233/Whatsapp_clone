@@ -73,8 +73,8 @@ const Status = () => {
                                     </div>
                               </div>
                         </CardContent>
-<Separator/>
-<Separator/>
+                        <Separator />
+                        <Separator />
                         {/* Recent Status Section */}
                         <CardDescription className="bg-slate-900 py-2 pb-16 px-4">
                               <h1 className="text-green-600 text-lg">Recent</h1>

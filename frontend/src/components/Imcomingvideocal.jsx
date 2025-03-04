@@ -7,7 +7,7 @@ import { usecallStore } from '@/store/useCallStore';
 const IncomingVideocall = ({ caller, offer, onClose }) => {
       if (!caller) return null; // Don't render if no caller
       const { socket } = authstore();
-      const { acceptCall,sendStream } = usecallStore();
+      const { acceptCall, sendStream } = usecallStore();
       const audioRef = useRef(null);
       useEffect(() => {
             if (!audioRef.current) return;
@@ -22,8 +22,8 @@ const IncomingVideocall = ({ caller, offer, onClose }) => {
             const acceptoffer = await peer.getAnswer(offer);
             console.log(acceptoffer);
             socket.emit(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, caller.id, acceptoffer);
-            acceptCall();
-            
+            acceptCall(caller.id);
+
             onClose();
       }, []);
 
@@ -41,7 +41,7 @@ const IncomingVideocall = ({ caller, offer, onClose }) => {
 
                         <div className="mt-4 space-x-4">
                               <button
-                                    className="bg-green-500 text-white px-4 py-2 rounded"
+                                    className="bg-green-500 text-white px-4 py-2 rounded animate-bounce"
                                     onClick={() => acceptcall(offer)}
                               >
                                     Accept
