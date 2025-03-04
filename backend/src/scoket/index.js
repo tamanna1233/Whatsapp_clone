@@ -55,14 +55,6 @@ const mountVideoCallDeclinEvent = (socket) => {
     });
 };
 
-const mountjoinVideoCallEndEvent=(socket)=>{
-    socket.on(chatEventEnum.VIDEO_CALL_END_EVENT,(userId)=>{
-        console.log(`video call end by ${socket.user._id} to ${userId}`)
-        socket.in(userId).emit(chatEventEnum.VIDEO_CALL_END_EVENT)
-
-    })
-
-}
 /**
  * The function `mountAcceptVideoCall` listens for a video call acceptance event on a socket and then
  * emits the event to the caller's socket.
@@ -181,7 +173,6 @@ const instalizeSocket = (io) => {
             mountAcceptVideoCall(socket);
             mountnegoation(socket)
             mountnegoationdone(socket)
-            mountjoinVideoCallEndEvent(socket)
             socket.on(chatEventEnum.DISCONNECT_EVENT, () => {
                 console.log(` user is disconnected ${socket.user._id}`);
                 if (socket?.user?._id) {

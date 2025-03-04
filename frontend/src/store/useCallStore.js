@@ -10,12 +10,10 @@ export const usecallStore = create((set, get) => ({
       isVideo: true,
       Stream: null,
       error: false,
-      callAccpeted:false,
-      /* The `startCall` function in the provided code is responsible for initiating a video call. Here
+    /* The `startCall` function in the provided code is responsible for initiating a video call. Here
     is a breakdown of what it does: */
       startCall: async (userId) => {
             const socket = authstore.getState().socket;
-            set({callAccpeted:false})
             if (!socket) {
                   return;
             }
@@ -25,28 +23,22 @@ export const usecallStore = create((set, get) => ({
 
             socket.emit(chatEventEnum.VIDEO_CALL_OFFER_EVENT, userId, offer);
       },
-      /* The `acceptCall` function in the provided code is setting the state of the call to indicate that
+    /* The `acceptCall` function in the provided code is setting the state of the call to indicate that
     the user has accepted the incoming call. It updates the state by setting `isInCall` to `true`
     and `isMinimized` to `false`, which means that the user is currently in a call and the call
     window is not minimized. */
-      acceptCall: (userId) => {
-            set({ isInCall: true, isMinimized: false,callAccpeted:true,userId:userId  });
+      acceptCall: () => {
+            set({ isInCall: true, isMinimized: false });
       },
-      /* The `endCall` function in the provided code is responsible for ending a call. Here is a
+    /* The `endCall` function in the provided code is responsible for ending a call. Here is a
     breakdown of what it does: */
       endCall: () => {
-            const socket=authstore.getState().socket
-            if(socket){
-                  console.log("socket emit")
-                  socket.emit(chatEventEnum.VIDEO_CALL_END_EVENT,get().userId)
-            }
-            get().endStream();
-
+            
+            get().endStream()
             set({ isInCall: false, isMinimized: false });
-
       },
 
-      /* The `toggleMinimized` function in the provided code is responsible for toggling the state of the
+    /* The `toggleMinimized` function in the provided code is responsible for toggling the state of the
     `isMinimized` property. When this function is called, it will invert the current value of
     `isMinimized` from `true` to `false` or from `false` to `true`, effectively toggling the
     minimized state of the call window. */
@@ -54,47 +46,51 @@ export const usecallStore = create((set, get) => ({
             set((state) => ({ isMinimized: !state.isMinimized }));
       },
 
-      /* The `setIsAudio` function in the provided code is a function that toggles the state of the
+     /* The `setIsAudio` function in the provided code is a function that toggles the state of the
      `isAudio` property in the store. When this function is called, it uses the `set` function
      provided by Zustand to update the state. */
       setIsAudio: async () => {
             set((state) => ({ isAudio: !state.isAudio }));
       },
 
-      /* The `setIsVideo` function in the provided code is a function that toggles the state of the
+    /* The `setIsVideo` function in the provided code is a function that toggles the state of the
     `isVideo` property in the store. When this function is called, it uses the `set` function
     provided by Zustand to update the state. */
-      setIsVideo: async () => {
-            set((state) => ({ isVideo: !state.isVideo }));
+    setIsVideo: async () => {
+  
+      set((state) => ({isVideo:!state.isVideo}));
 
-            if (!get().isVideo) {
-                  const stream = get().Stream;
-                  if (stream) {
-                        stream.getVideoTracks().forEach((track) => track.stop());
-                  }
-            } else {
-                  try {
-                        const newstream = await navigator.mediaDevices.getUserMedia({
-                              video: true,
-                              audio: true,
-                        });
-                        const stream = get().Stream;
-                        const videoTrack = newstream.getVideoTracks()[0];
-                        if (stream) {
-                              stream.getVideoTracks().forEach((track) => stream.removeTrack(track));
-                              stream.addTrack(videoTrack);
+      if(!get().isVideo){
 
-                              set({ Stream: stream });
-                        } else {
-                              set({ Stream: newstream });
-                        }
-                  } catch (error) {
-                        console.log(`error while seting new video stream ${error.message}`);
-                  }
+            const stream=get().Stream
+            if(stream){
+                  stream.getVideoTracks().forEach(track=>track.stop())
             }
-      },
+            
+      }
+      else{
+            try {
+                  const newstream=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
+                  const stream=get().Stream
+                  const videoTrack=newstream.getVideoTracks()[0]
+                  if(stream){
+                        stream.getVideoTracks().forEach(track=>stream.removeTrack(track))
+                        stream.addTrack(videoTrack)
 
-      /* The `startStream` function in the provided code is responsible for starting a media stream for
+                        set({Stream:stream})
+                  }else{
+                        set({Stream:newstream})
+                  }
+                  
+            } catch (error) {
+                  console.log(`error while seting new video stream ${error.message}`)
+                  
+            }
+      }
+  },
+  
+
+   /* The `startStream` function in the provided code is responsible for starting a media stream for
    video and audio. Here is a breakdown of what it does: */
       startStream: async () => {
             try {
@@ -112,21 +108,22 @@ export const usecallStore = create((set, get) => ({
             }
       },
 
-      /* The `sendStream` function in the provided code is responsible for sending the media stream to the
+   /* The `sendStream` function in the provided code is responsible for sending the media stream to the
    peer during a call. Here is a breakdown of what it does: */
       sendStream: async () => {
             const stream = get().Stream;
-            console.log(stream);
-            if (stream) {
+            console.log(stream)
+            if (stream ) {
                   stream.getTracks().forEach((track) => {
-                        if (!peer.peer.getSenders().find((sender) => sender.track === track)) {
+                        if (!peer.peer.getSenders().find(sender => sender.track === track)) {
                               peer.peer.addTrack(track, stream);
-                        }
+                          }
+                          
                   });
             }
       },
 
-      /* The `endStream` function in the provided code is responsible for ending the media stream. Here is
+   /* The `endStream` function in the provided code is responsible for ending the media stream. Here is
    a breakdown of what it does: */
       endStream: async () => {
             const stream = get().Stream;
@@ -135,8 +132,4 @@ export const usecallStore = create((set, get) => ({
                   set({ Stream: null });
             }
       },
-
-      setCallAccepted:()=>{
-            set({callAccpeted:true})
-      }
 }));
