@@ -1,16 +1,36 @@
-class PeerServices {
+class PeerService {
       constructor() {
             if (!this.peer) {
                   this.peer = new RTCPeerConnection({
                         iceServers: [
-                              {
-                                    urls: [
-                                          'stun:stun.l.google.com:19302',
-                                          'stun:global.stun.twilio.com:3478',
-                                    ],
-                              },
+                              { urls: 'stun:stun.l.google.com:19302' },
+                              { urls: 'stun:global.stun.twilio.com:3478' },
                         ],
                   });
+            }
+      }
+
+      async getAnswer(offer) {
+            if (this.peer) {
+                  await this.peer.setRemoteDescription(offer);
+                  const ans = await this.peer.createAnswer();
+                  await this.peer.setLocalDescription(new RTCSessionDescription(ans));
+                  return ans;
+            }
+      }
+
+      async setLocalDescription(ans) {
+            if (this.peer) {
+                  // console.log('Current Signaling State:', this.peer.signalingState); // Debugging
+
+                  // if (this.peer.signalingState === 'have-local-offer') {
+                  await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
+                  // } else {
+                  //       console.warn(
+                  //             'Skipping setRemoteDescription: Wrong signaling state:',
+                  //             this.peer.signalingState,
+                  //       );
+                  // }
             }
       }
 
@@ -21,6 +41,7 @@ class PeerServices {
                   return offer;
             }
       }
+<<<<<<< HEAD
       async getAnswer(offer) {
             if (this.peer) {
                   await this.peer.setRemoteDescription(offer);
@@ -35,6 +56,8 @@ class PeerServices {
                   await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
             }
       }
+=======
+>>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
 }
 
-export default new PeerServices();
+export default new PeerService();

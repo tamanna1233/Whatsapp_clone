@@ -11,7 +11,13 @@ import { toast } from './hooks/use-toast';
 
 function App() {
       const { checkCurrentUser, authUser, socket } = authstore();
+<<<<<<< HEAD
       const { endCall } = usecallStore();
+=======
+
+      const { endCall } = usecallStore();
+      
+>>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
       const [imcomingCall, setIncomingCall] = useState(null);
       const checkUser = useCallback(async () => {
             await checkCurrentUser();

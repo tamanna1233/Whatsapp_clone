@@ -11,13 +11,14 @@ const messageSchema = new Schema(
 
         content: {
             type: String,
-            
         },
         attachment: {
-            type: [{
-               url: String,
-               public_id:String
-            }],
+            type: [
+                {
+                    url: String,
+                    public_id: String,
+                },
+            ],
             default: [],
         },
         chat: {

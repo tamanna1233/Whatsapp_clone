@@ -41,5 +41,15 @@ export const chatEventEnum = Object.freeze({
       AUDIO_CALL_DECLINE_EVENT: 'audioCallDecline',
       // when an audio call ends
       AUDIO_CALL_END_EVENT: 'audioCallEnd',
+
+      NAGOTION_NEEDED: 'negoationneed',
+      //Nagoation done
+      NAGONETIONDONE: 'negoationdone',
+      //final nagotion
+      FINALNAGOTION: 'finalnegoation',
+      // handeladuiopase
+      AUDIOPAUSE: 'audiopause',
+      // handel videopase
+      VIDEOPAUSE: 'videopause',
 });
 export const avilableChatEvent = Object.values(chatEventEnum);

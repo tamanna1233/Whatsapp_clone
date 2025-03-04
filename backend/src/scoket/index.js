@@ -17,10 +17,18 @@ const mountJoinChatEvent = (socket) => {
     });
 };
 
+/**
+ * The `mountjoinVideoCallEvent` function listens for video call offers and forwards them to the
+ * recipient along with the caller's profile information.
+ * @param socket - The `socket` parameter in the `mountjoinVideoCallEvent` function represents a
+ * connection between the server and a client in a real-time communication system, often implemented
+ * using technologies like Socket.IO. It allows for bidirectional communication between the server and
+ * the client, enabling events to be emitted and received on
+ */
 const mountjoinVideoCallEvent = (socket) => {
     socket.on(chatEventEnum.VIDEO_CALL_OFFER_EVENT, (userId, offer) => {
         console.log(`User ${socket.user._id} offered a video call in chat: ${userId}`);
-        
+
         // Send the offer along with the caller's profile
         socket.in(userId).emit(chatEventEnum.VIDEO_CALL_OFFER_EVENT, {
             offer,
@@ -28,29 +36,74 @@ const mountjoinVideoCallEvent = (socket) => {
                 id: socket.user._id,
                 name: socket.user.name, // Assuming `name` exists in User model
                 avatar: socket.user.profilePic.url, // Assuming `avatar` exists in User model
-            }
+            },
         });
     });
 };
 
-const mountVideoCallDeclinEvent=(socket)=>{
-socket.on(chatEventEnum.VIDEO_CALL_DECLINE_EVENT,(userId)=>{
-    console.log(`videocall is delcine by ${socket.user.name}`)
-    socket.in(userId).emit(chatEventEnum.VIDEO_CALL_DECLINE_EVENT)
-})
+/**
+ * The function `mountVideoCallDeclinEvent` listens for a video call decline event on a socket and
+ * emits the event to a specific user.
+ * @param socket - The `socket` parameter in the `mountVideoCallDeclinEvent` function is an object
+ * representing a connection between the server and a client. It allows for real-time communication
+ * between the server and the client using events and data exchange.
+ */
+const mountVideoCallDeclinEvent = (socket) => {
+    socket.on(chatEventEnum.VIDEO_CALL_DECLINE_EVENT, (userId) => {
+        console.log(`videocall is delcine by ${socket.user.name}`);
+        socket.in(userId).emit(chatEventEnum.VIDEO_CALL_DECLINE_EVENT);
+    });
+};
 
-}
+/**
+ * The function `mountAcceptVideoCall` listens for a video call acceptance event on a socket and then
+ * emits the event to the caller's socket.
+ * @param socket - The `socket` parameter in the `mountAcceptVideoCall` function is an object
+ * representing a connection between the server and a client. It allows for real-time communication
+ * between the server and the client using events and data exchange.
+ */
+const mountAcceptVideoCall = (socket) => {
+    socket.on(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, (callerId, offer) => {
+        console.log(`${socket.user.name} accpet vediocall from  callerId :${callerId}`);
 
-const mountAcceptVideoCall=(socket)=>{
-    socket.on(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT,(callerId,offer)=>{
-        console.log(`${socket.user.name} accpet vediocall from  callerId :${callerId}`)
+        socket.in(callerId).emit(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, callerId, offer);
+    });
+};
 
-        socket.in(callerId).emit(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT,callerId,offer)
-        
+
+/**
+ * The function `mountnegoation` listens for a specific event and emits the same event to a specific
+ * user with certain data.
+ * @param socket - The `socket` parameter in the `mountnegoation` function is an object representing a
+ * connection between the server and a client. It allows for real-time communication between the server
+ * and the client using events and data exchange.
+ */
+const mountnegoation=(socket)=>{
+
+    socket.on(chatEventEnum.NAGOTION_NEEDED,(userId,offer)=>{
+        console.log(`negoation needed ${userId} offer ${offer}`)
+        console.log(`socketId${socket.user._id} user${userId}`)
+        socket.in(userId).emit(chatEventEnum.NAGOTION_NEEDED,socket.user._id,offer)
     })
 }
 
+/**
+ * The function `mountnegoationdone` listens for a negotiation done event on a socket and emits a final
+ * negotiation event to a specific user.
+ * @param socket - The `socket` parameter in the `mountnegoationdone` function is an object
+ * representing a connection between the server and a client in a real-time communication system,
+ * typically using Socket.IO. It allows for bidirectional communication between the server and the
+ * client.
+ */
+const mountnegoationdone=(socket)=>{
+    socket.on(chatEventEnum.NAGONETIONDONE,(userId,ans)=>{
+        console.log(`nogation done ${userId}`)
+        console.log(`socketId${socket.user._id} user${userId}`)
 
+socket.in(userId).emit(chatEventEnum.FINALNAGOTION,ans)
+
+    })
+}
 /**
  * The function `mountParticipantTypingEvent` listens for typing events on a socket and emits them to
  * the corresponding chat room.
@@ -63,6 +116,8 @@ const mountParticipantTypingEvent = (socket) => {
         socket.in(chatId).emit(chatEventEnum.TYPING_EVENT, chatId);
     });
 };
+
+
 
 /**
  * The function `mountParticipantStoppedTypingEvent` listens for the STOP_TYPING_EVENT on a socket and
@@ -88,7 +143,6 @@ const mountParticipantStoppedTypingEvent = (socket) => {
  */
 const instalizeSocket = (io) => {
     return io.on('connection', async (socket) => {
-      
         try {
             const cookies = cookie.parse(socket.handshake?.headers?.cookie || '');
             let token = cookies?.accessToken;
@@ -107,16 +161,18 @@ const instalizeSocket = (io) => {
                 throw new apiError(404, 'unauthroised handshake token is invaild');
             }
             socket.user = user;
-            socket.emit(chatEventEnum.CONNECTED_EVENT,user._id.toString());
+            socket.emit(chatEventEnum.CONNECTED_EVENT, user._id.toString());
             socket.join(user._id.toString());
             console.log(`user is conected  👤 ${user._id.toString()}`);
-           
+
             mountJoinChatEvent(socket);
             mountParticipantTypingEvent(socket);
             mountParticipantStoppedTypingEvent(socket);
-            mountjoinVideoCallEvent(socket)
-            mountVideoCallDeclinEvent(socket)
-            mountAcceptVideoCall(socket)
+            mountjoinVideoCallEvent(socket);
+            mountVideoCallDeclinEvent(socket);
+            mountAcceptVideoCall(socket);
+            mountnegoation(socket)
+            mountnegoationdone(socket)
             socket.on(chatEventEnum.DISCONNECT_EVENT, () => {
                 console.log(` user is disconnected ${socket.user._id}`);
                 if (socket?.user?._id) {
@@ -151,12 +207,9 @@ const instalizeSocket = (io) => {
  * which emits the specified event with the given payload to all sockets in the specified room.
  */
 const emitSocketEvent = async (req, roomid, event, payload) => {
-    const io=req.app.get("io")
-    console.log("room",roomid)
+    const io = req.app.get('io');
+    console.log('room', roomid);
     io.in(roomid).emit(event, payload);
-      
-  
 };
-
 
 export { instalizeSocket, emitSocketEvent };

@@ -56,7 +56,7 @@ const userSchema = new Schema(
                 default: null, // Optional
             },
         },
-        
+
         refreshToken: {
             type: String,
         },

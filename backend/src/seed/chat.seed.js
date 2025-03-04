@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
-import { User } from "../Models/usermodel.js"
+import { User } from '../Models/usermodel.js';
 import argon2 from 'argon2';
 import { dbname } from '../constant.js';
-console.log(`${process.env.dburl}/${dbname}`)
+console.log(`${process.env.dburl}/${dbname}`);
 // Connect to MongoDB
 const connectDB = async () => {
     try {
-           const connection = await mongoose.connect(`${process.env.dburl}/${dbname}`);
-           console.log(`db connnected sucessfully on ${connection.connection.host}`);
-       } catch (error) {
-           console.log(`something went wrong ${error}`);
-           process.exit(1);
-       }
+        const connection = await mongoose.connect(`${process.env.dburl}/${dbname}`);
+        console.log(`db connnected sucessfully on ${connection.connection.host}`);
+    } catch (error) {
+        console.log(`something went wrong ${error}`);
+        process.exit(1);
+    }
 };
 
 // Generate fake users
@@ -43,8 +43,7 @@ const generateUsers = async (count = 10) => {
 // Seed the database
 const seedDatabase = async () => {
     await connectDB();
-    
-  
+
     console.log('Existing users deleted');
 
     const users = await generateUsers(10);
@@ -55,4 +54,4 @@ const seedDatabase = async () => {
 };
 
 // Run the seeding script
-seedDatabase().catch(err => console.error(err));
+seedDatabase().catch((err) => console.error(err));
