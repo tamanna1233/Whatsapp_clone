@@ -24,6 +24,7 @@ export const usecallStore = create((set, get) => ({
 
             socket.emit(chatEventEnum.VIDEO_CALL_OFFER_EVENT, userId, offer);
       },
+
     /* The `acceptCall` function in the provided code is setting the state of the call to indicate that
     the user has accepted the incoming call. It updates the state by setting `isInCall` to `true`
     and `isMinimized` to `false`, which means that the user is currently in a call and the call

@@ -1,3 +1,5 @@
+
+
 import React, { useRef, useState, useEffect, useId } from 'react';
 
 /* This code defines a functional React component called `Dragable` using the `React.forwardRef`
@@ -39,8 +41,7 @@ const Dragable = React.forwardRef(({ isMinimized, children, className }, ref) =>
 
       return (
             <div
-                  className={`${className} fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden z-50 
-                        `}
+                  className={`fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden `}
                   style={{
                         transform: isMinimized
                               ? `translate(${position.x}px, ${position.y}px)`

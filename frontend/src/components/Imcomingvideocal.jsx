@@ -1,12 +1,13 @@
 import { chatEventEnum } from '@/constants';
 import { authstore } from '@/store/authstore';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ringtone from '../assets/ringtone.m4a';
 import peer from '@/services/peer';
 import { usecallStore } from '@/store/useCallStore';
 const IncomingVideocall = ({ caller, offer, onClose }) => {
       if (!caller) return null; // Don't render if no caller
       const { socket } = authstore();
+     
       const { acceptCall,sendStream } = usecallStore();
       const audioRef = useRef(null);
       useEffect(() => {
@@ -17,6 +18,7 @@ const IncomingVideocall = ({ caller, offer, onClose }) => {
             socket.emit(chatEventEnum.VIDEO_CALL_DECLINE_EVENT, caller.id);
             onClose();
       };
+ 
       const acceptcall = useCallback(async (offer) => {
             console.log('Accepting call with offer:', offer);
             const acceptoffer = await peer.getAnswer(offer);
@@ -54,7 +56,7 @@ const IncomingVideocall = ({ caller, offer, onClose }) => {
                         </div>
                   </div>
             </div>
-      );
-};
+      )
+}
 
 export default IncomingVideocall;

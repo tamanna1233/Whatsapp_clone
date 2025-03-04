@@ -4,7 +4,6 @@ import { authstore } from './store/authstore';
 import AppSidebar from './components/Sidebar';
 import { Outlet } from 'react-router';
 import { chatEventEnum } from './constants';
-import Setting from './components/Setting';
 import Videocall from './components/Videocall';
 import IncomingVideocall from './components/Imcomingvideocal';
 import { usecallStore } from './store/useCallStore';
@@ -12,6 +11,7 @@ import { toast } from './hooks/use-toast';
 
 function App() {
       const { checkCurrentUser, authUser, socket } = authstore();
+
 
       const { endCall } = usecallStore();
       
@@ -40,15 +40,14 @@ function App() {
             };
       }, [checkUser, socket]); // Removed `socket` from dependencies
 
-      useEffect(() => {
-            document.addEventListener('contextmenu', (event) => event.preventDefault());
-            return () => {
-                  document.removeEventListener('contextmenu', (event) => event.preventDefault());
-            };
-      }, []);
+      // useEffect(() => {
+      //       document.addEventListener('contextmenu', (event) => event.preventDefault());
+      //       return () => {
+      //             document.removeEventListener('contextmenu', (event) => event.preventDefault());
+      //       };
+      // }, []);
       return (
             <div className="flex h-screen fixed w-screen font-serif">
-                  <Setting />
                   <AppSidebar />
                   <Outlet />
                   <Videocall />

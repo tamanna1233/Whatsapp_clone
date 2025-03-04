@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Plus, EllipsisVertical } from 'lucide-react';
 import { Separator } from './ui/separator';
@@ -9,7 +9,7 @@ import Statusplayer from './statusplayer';
 import { MdClose } from 'react-icons/md';
 const Status = () => {
       const { authUser } = authstore();
-      const { myStatus, getMystatus, getAllStatus, status } = useStatus();
+      const { myStatus, getMystatus, getAllStatus, status, uploadStatus } = useStatus();
 
       // State to track which status is being played
       const [selectedStatus, setSelectedStatus] = useState(null);
@@ -32,7 +32,16 @@ const Status = () => {
       const closeStatusPlayer = () => {
             setSelectedStatus(null);
       };
-
+      const input = useRef();
+      const handleinput = () => {
+            input.current.click();
+            console.log('clicked');
+      };
+      const onchange = () => {
+            console.log(input?.current?.files);
+            const file = input.current.files[0];
+            uploadStatus(file);
+      };
       return (
             <>
                   <Card className="m-0 p-0 border-none shadow-none text-white bg-slate-900 w-full rounded-none">
@@ -59,10 +68,20 @@ const Status = () => {
                                                             ? 'border-green-600 border-4'
                                                             : ''
                                                 }`}
-                                                onClick={() => handleStories(myStatus[0])}
+                                                onClick={() => {console.log(myStatus); handleStories(myStatus[0])}}
                                           />
                                           <div className="bg-teal-900 absolute bottom-0 right-0 h-6 w-6 rounded-full flex justify-center items-center">
-                                                <Plus className="text-white" size={22} />
+                                                <Plus
+                                                      className="text-white"
+                                                      size={22}
+                                                      onClick={handleinput}
+                                                />
+                                                <input
+                                                      type="file"
+                                                      hidden
+                                                      ref={input}
+                                                      onChange={onchange}
+                                                />
                                           </div>
                                     </div>
                                     <div>
@@ -73,8 +92,8 @@ const Status = () => {
                                     </div>
                               </div>
                         </CardContent>
-<Separator/>
-<Separator/>
+                        <Separator className="h-0.5" />
+
                         {/* Recent Status Section */}
                         <CardDescription className="bg-slate-900 py-2 pb-16 px-4">
                               <h1 className="text-green-600 text-lg">Recent</h1>

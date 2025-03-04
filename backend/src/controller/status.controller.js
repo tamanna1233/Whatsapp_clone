@@ -37,8 +37,9 @@ const deleteStatus = asyncHandler(async (req, res) => {
     }
     console.log(_id);
 
-    const { statusId } = req.body;
-    console.log(statusId);
+    const {statusId} = req.params; 
+    console.log(statusId)
+
     if (!statusId) {
         return res.status(400).json({ message: 'Status ID is required' });
     }
