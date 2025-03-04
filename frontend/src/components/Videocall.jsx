@@ -29,7 +29,10 @@ const Videocall = () => {
             endStream,
             setIsVideo,
             setCallAccepted,
-            callAccpeted
+            callAccpeted,
+            setIsAudio,
+            setRemoteStream,
+            remoteStream
 
       } = usecallStore();
       const { socket,authUser } = authstore();
@@ -46,6 +49,7 @@ const Videocall = () => {
                         if(Stream){
 
                               sendStream();
+                              console.log(`sending stream`)
                         }
                         // Ensure local description is set after adding tracks
                         await peer.setLocalDescription(answer);
@@ -55,24 +59,24 @@ const Videocall = () => {
             [Stream],
       );
 
-      const handleTrackEvent = async (event) => {
-            if (event.streams && event.streams[0]) {
-                  try {
-                        if (remoteStreamRef.current) {
-                              remoteStreamRef.current.srcObject = event.streams[0];
+      // const handleTrackEvent = async (event) => {
+      //       if (event.streams && event.streams[0]) {
+      //             try {
+      //                   if (remoteStreamRef.current) {
+      //                         remoteStreamRef.current.srcObject = event.streams[0];
 
-                              // Ensure the video plays after setting the source
-                              remoteStreamRef.current.onloadedmetadata = () => {
-                                    remoteStreamRef.current.play().catch((error) => {
-                                          console.error('Error auto-playing remote video:', error);
-                                    });
-                              };
-                        }
-                  } catch (error) {
-                        console.error('Error setting remote stream:', error);
-                  }
-            }
-      };
+      //                         // Ensure the video plays after setting the source
+      //                         remoteStreamRef.current.onloadedmetadata = () => {
+      //                               remoteStreamRef.current.play().catch((error) => {
+      //                                     console.error('Error auto-playing remote video:', error);
+      //                               });
+      //                         };
+      //                   }
+      //             } catch (error) {
+      //                   console.error('Error setting remote stream:', error);
+      //             }
+      //       }
+      // };
 
       const handelnogation = useCallback(async () => {
             const offer = await peer.getoffer();
@@ -89,6 +93,7 @@ const Videocall = () => {
       );
 
       const handelfinal = useCallback(async (ans) => {
+            console.log("nagaotion complete")
             await peer.setLocalDescription(ans);
       }, []);
 
@@ -98,15 +103,15 @@ const Videocall = () => {
             return () => {
                   peer.peer?.removeEventListener?.('negotiationneeded', handelnogation);
             };
-      }, [handelnogation,peer,Stream]);
+      }, [remoteStream]);
 
       // Handle Incoming Remote Stream
       useEffect(() => {
-            peer.peer.addEventListener('track', handleTrackEvent);
+            peer.peer.addEventListener('track', setRemoteStream);
             return () => {
-                  peer.peer.removeEventListener('track', handleTrackEvent);
+                  peer.peer.removeEventListener('track', setRemoteStream);
             };
-      }, [sendStream,Stream]);
+      }, [startStream]);
 const handelremoteEndCall=()=>{
 }
 
@@ -116,7 +121,6 @@ const handelremoteEndCall=()=>{
 
             socket.on(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, handleAcceptCall);
             socket.on(chatEventEnum.VIDEO_CALL_END_EVENT, handelremoteEndCall);
-
             socket.on(chatEventEnum.NAGOTION_NEEDED, handleIncomingNego);
             socket.on(chatEventEnum.FINALNAGOTION, handelfinal);
             return () => {
@@ -131,15 +135,17 @@ const handelremoteEndCall=()=>{
       // Start/Stop Stream When Call Starts or Ends
       useEffect(() => {
             if (isInCall && !Stream) {
-                  startStream();
-
-
+                startStream();
             }
-
+        
             return () => {
-                  endStream();
+                if (Stream) {
+                    Stream.getTracks().forEach(track => track.stop()); // Stop all media tracks
+                    endStream();
+                }
             };
-      }, [isInCall]); // Remove `Stream` from dependencies
+        }, [isInCall]);
+         // Remove `Stream` from dependencies
 
       useEffect(()=>{
             if(Stream&&videoRef.current){
@@ -151,16 +157,22 @@ const handelremoteEndCall=()=>{
             if (Stream) {
                   sendStream();
             }
-      }, [Stream, sendStream, handelfinal, handleAcceptCall]); // Runs when Stream is updated
+      }, [Stream]); // Runs when Stream is updated
 
-      useEffect(() => {
-            if (remoteStreamRef.current && remoteStreamRef.current.srcObject) {
-                  remoteStreamRef.current.play().catch((error) => {
-                  });
-            }
-      }, [remoteStreamRef.current?.srcObject]);
+      // useEffect(() => {
+      //       if (remoteStreamRef.current && remoteStream) {
+      //           console.log(`Setting remote stream`);
+      //           remoteStreamRef.current.srcObject = remoteStream;
+      //           remoteStreamRef.current.onloadedmetadata = () => {
+      //               remoteStreamRef.current.play().catch(err => 
+      //                   console.error("Error playing remote stream:", err)
+      //               );
+      //           };
+      //       }
+      //   }, [remoteStream,]);
+        
 
-
+console.log(`remote stream `,remoteStream)
   
       // End Call
       const handleEndCall = () => {
@@ -170,6 +182,8 @@ const handelremoteEndCall=()=>{
  
       if (!isInCall) return null;
 
+      
+
       const RemoteStream = () => {
             return (
                   <>
@@ -178,9 +192,9 @@ const handelremoteEndCall=()=>{
                               className="border-2  w-80 relative  top-0 right-10 bg-black"
                         >
                               <div className="flex justify-center items-center flex-col ">
-                                    <video
-                                          ref={remoteStreamRef}
-                                          autoPlay
+                                    <ReactPlayer
+                                          url={remoteStream}
+                                          playing={true}
                                           playsInline
                                           className=" h-auto aspect-video object-cover rounded-lg "
                                     />
@@ -262,7 +276,7 @@ const handelremoteEndCall=()=>{
                                           </div>
                                     )}
                                     <div className="flex items-center justify-center p-2 w-full gap-8">
-                                          <button className="text-white bg-slate-900 rounded-full p-4">
+                                          <button className="text-white bg-slate-900 rounded-full p-4" onClick={setIsAudio}>
                                                 {isAudio ? (
                                                       <FaMicrophone size={25} />
                                                 ) : (

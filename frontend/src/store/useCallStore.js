@@ -11,6 +11,7 @@ export const usecallStore = create((set, get) => ({
       Stream: null,
       error: false,
       callAccpeted:true,
+      remoteStream:"",
     /* The `startCall` function in the provided code is responsible for initiating a video call. Here
     is a breakdown of what it does: */
       startCall: async (userId) => {
@@ -55,6 +56,33 @@ export const usecallStore = create((set, get) => ({
      provided by Zustand to update the state. */
       setIsAudio: async () => {
             set((state) => ({ isAudio: !state.isAudio }));
+            if(!get().isAudio){
+
+                  const stream=get().Stream
+                  if(stream){
+                        stream.getAudioTracks().forEach(track=>track.stop())
+                  }
+                  
+            }
+            else{
+                  try {
+                        const newstream=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
+                        const stream=get().Stream
+                        const audioTrack=newstream.getAudioTracks()[0]
+                        if(stream){
+                              stream.getAudioTracks().forEach(track=>stream.removeTrack(track))
+                              stream.addTrack(audioTrack)
+      
+                              set({Stream:stream})
+                        }else{
+                              set({Stream:newstream})
+                        }
+                        
+                  } catch (error) {
+                        console.log(`error while seting new video stream ${error.message}`)
+                        
+                  }
+            }
       },
 
     /* The `setIsVideo` function in the provided code is a function that toggles the state of the
@@ -138,4 +166,11 @@ export const usecallStore = create((set, get) => ({
                   set({ Stream: null });
             }
       },
+
+      setRemoteStream:(event)=>{
+           console.log("events",event)
+            if(event.streams && event.streams[0]){
+                  set({remoteStream:event.streams[0]})
+            }
+      }
 }));
