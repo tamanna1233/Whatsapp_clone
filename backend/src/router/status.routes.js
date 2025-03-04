@@ -5,7 +5,7 @@ import { upload } from "../middleware/mullter.middleware.js";
 
 const router = Router();
 router.route('/uploadStatus').post(verifyjwt,upload.single('content') ,uploadStatus)
-router.route('/deleteStatus').delete(verifyjwt,deleteStatus)
+router.route('/deletestatus/:statusId').delete(verifyjwt,deleteStatus)
 router.route("/getallstatus").get(verifyjwt,getAllStatus)
 router.route("/getmystatus").get(verifyjwt,getmystatus)
 
