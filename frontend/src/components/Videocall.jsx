@@ -115,6 +115,27 @@ const Videocall = () => {
 const handelremoteEndCall=()=>{
 }
 
+handelremoteAudio=async(isAudio)=>{
+      console.log("audio",isAudio)
+  const audiotrack=     peer.peer.getReceivers().find(r=>r.track?.kind==="audio")?.track
+  console.log(audiotrack)
+  if(audiotrack){
+      audiotrack.enabled=isAudio
+  }
+  }
+
+
+handelremotevideo=async(isVideo)=>{
+      console.log("audio",isVideo)
+  const audiotrack=     peer.peer.getReceivers().find(r=>r.track?.kind==="audio")?.track
+  console.log(audiotrack)
+  if(audiotrack){
+      audiotrack.enabled=isAudio
+
+  }
+
+}
+
       // Handle Video Call Events
       useEffect(() => {
             if (!socket) return;
@@ -205,8 +226,7 @@ console.log(`remote stream `,remoteStream)
       }
 
       return (
-            
-          
+            <>
                   <Dragable isMinimized={isMinimized}>
                         {/* Header */}
                         <div className={`${isMinimized ? 'w-80 h-56' : 'w-screen h-screen'} `}>
@@ -249,6 +269,7 @@ console.log(`remote stream `,remoteStream)
                                                             ref={videoRef}
                                                             autoPlay
                                                             playsInline
+                                                            muted
                                                             className="w-screen h-screen aspect-video object-contain"
                                                       />
                                                       
@@ -306,11 +327,7 @@ console.log(`remote stream `,remoteStream)
                               </div>
                         </div>
                   </Dragable>
-
-                  
-                        
-                  
-            
+            </>
       );
 }
 

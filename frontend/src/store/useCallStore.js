@@ -38,11 +38,19 @@ export const usecallStore = create((set, get) => ({
       },
     /* The `endCall` function in the provided code is responsible for ending a call. Here is a
     breakdown of what it does: */
-      endCall: () => {
-            
-            get().endStream()
-            set({ isInCall: false, isMinimized: false });
-      },
+      // Update endCall handler:
+endCall: () => {
+      peer.peer.getSenders().forEach(sender => sender.track?.stop());
+      peer.peer.close();
+      peer.peer = new RTCPeerConnection(); // Reset connection
+      
+      set({ 
+        isInCall: false,
+        Stream: null,
+        remoteStream: null,
+        callAccepted: false
+      });
+    },
 
     /* The `toggleMinimized` function in the provided code is responsible for toggling the state of the
     `isMinimized` property. When this function is called, it will invert the current value of
@@ -55,72 +63,51 @@ export const usecallStore = create((set, get) => ({
      /* The `setIsAudio` function in the provided code is a function that toggles the state of the
      `isAudio` property in the store. When this function is called, it uses the `set` function
      provided by Zustand to update the state. */
-      setIsAudio: async () => {
-            set((state) => ({ isAudio: !state.isAudio }));
-            if(!get().isAudio){
-
-                  const stream=get().Stream
-                  if(stream){
-                        stream.getAudioTracks().forEach(track=>track.stop())
-                  }
-                  
-            }
-            else{
-                  try {
-                        const newstream=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
-                        const stream=get().Stream
-                        const audioTrack=newstream.getAudioTracks()[0]
-                        if(stream){
-                              stream.getAudioTracks().forEach(track=>stream.removeTrack(track))
-                              stream.addTrack(audioTrack)
+   // In usecallStore, update setIsVideo and setIsAudio:
+setIsVideo: async () => {
+      set(state => ({ isVideo: !state.isVideo }));
       
-                              set({Stream:stream})
-                        }else{
-                              set({Stream:newstream})
-                        }
-                        
-                  } catch (error) {
-                        console.log(`error while seting new video stream ${error.message}`)
-                        
-                  }
-            }
-      },
-
-    /* The `setIsVideo` function in the provided code is a function that toggles the state of the
-    `isVideo` property in the store. When this function is called, it uses the `set` function
-    provided by Zustand to update the state. */
-    setIsVideo: async () => {
-  
-      set((state) => ({isVideo:!state.isVideo}));
-
-      if(!get().isVideo){
-
-            const stream=get().Stream
-            if(stream){
-                  stream.getVideoTracks().forEach(track=>track.stop())
-            }
-            
+      try {
+        if (get().isVideo) {
+          const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const videoTrack = newStream.getVideoTracks()[0];
+          await peer.replaceVideoTrack(videoTrack);
+          const socket =authstore.getState().socket
+          if(socket){
+            socket.emit(chatEventEnum.VIDEOPAUSE ,{isVideo:get().isVideo,userId:get().userId})
+          }
+        } else {
+          await peer.replaceVideoTrack(null);
+          get().Stream?.getVideoTracks().forEach(track => track.stop());
+        }
+      } catch (error) {
+        console.error("Error handling video:", error);
       }
-      else{
-            try {
-                  const newstream=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
-                  const stream=get().Stream
-                  const videoTrack=newstream.getVideoTracks()[0]
-                  if(stream){
-                        stream.getVideoTracks().forEach(track=>stream.removeTrack(track))
-                        stream.addTrack(videoTrack)
+    },
+    
+    setIsAudio: async () => {
+      set(state => ({ isAudio: !state.isAudio }));
 
-                        set({Stream:stream})
-                  }else{
-                        set({Stream:newstream})
-                  }
-                  
-            } catch (error) {
-                  console.log(`error while seting new video stream ${error.message}`)
-                  
-            }
+      
+      try {
+        if (get().isAudio) {
+          const newStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const audioTrack = newStream.getAudioTracks()[0];
+          await peer.replaceAudioTrack(audioTrack);
+          const socket =authstore.getState().socket
+          if(socket){
+            socket.emit(chatEventEnum.AUDIOPAUSE ,{isAudio:get().isAudio ,userId:get().userId} ,)
+          }
+
+      
+        } else {
+          await peer.replaceAudioTrack(null);
+          get().Stream?.getAudioTracks().forEach(track => track.stop());
+        }
+      } catch (error) {
+        console.error("Error handling audio:", error);
       }
-  },
+    },
   
   setCallAccepted:()=>{
       console.log("call accpeted")

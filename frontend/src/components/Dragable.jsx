@@ -41,7 +41,7 @@ const Dragable = React.forwardRef(({ isMinimized, children, className }, ref) =>
 
       return (
             <div
-                  className={`fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden `}
+                  className={`fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden  z-50`}
                   style={{
                         transform: isMinimized
                               ? `translate(${position.x}px, ${position.y}px)`
