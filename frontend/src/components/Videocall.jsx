@@ -9,17 +9,9 @@ import { MdClose, MdNetworkPing } from 'react-icons/md';
 import Dragable from './Dragable';
 
 const Videocall = () => {
-<<<<<<< HEAD
-      const { isInCall, endCall, isMinimized, toggleMinimized, userId } = usecallStore();
-      const { socket } = authstore();
-      const videoRef = useRef(null);
       const streamRef = useRef(null);
-      const [error, setError] = useState(null);
 
       const dragRef = useRef(null);
-      const [isMute, setisMute] = useState(true);
-      const [isVideo, setIsVideo] = useState(true);
-=======
       const {
             isInCall,
             endCall,
@@ -39,7 +31,6 @@ const Videocall = () => {
 
       const videoRef = useRef(null);
       const remoteStreamRef = useRef(null);
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
 
       const handleAcceptCall = useCallback(
             async (callerID, answer) => {
@@ -73,7 +64,6 @@ const Videocall = () => {
                     console.error('Error setting remote stream:', error);
                 }
             }
-<<<<<<< HEAD
       }, [isVideo, isMute]);
 
       useEffect(() => {
@@ -151,14 +141,12 @@ const Videocall = () => {
                   endStream();
             };
       }, [isInCall]); // Remove `Stream` from dependencies
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
 
       useEffect(() => {
             if (Stream && videoRef.current && !videoRef.current.srcObject) {
                   
                   videoRef.current.srcObject = Stream;
             }
-<<<<<<< HEAD
             return () => {
                   if (streamRef.current) {
                         streamRef.current.getTracks().forEach((track) => track.stop());
@@ -228,7 +216,6 @@ const Videocall = () => {
       };
 
       return (
-<<<<<<< HEAD
             <Dragable ref={dragRef} isMinimized={isMinimized}>
                   {/* Header */}
                   <div className={`${isMinimized ? 'w-80 h-56' : 'w-screen h-screen'} `}>

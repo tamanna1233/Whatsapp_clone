@@ -12,7 +12,7 @@ const Status = () => {
       const { myStatus, getMystatus, getAllStatus, status, uploadStatus } = useStatus();
 
       // State to track which status is being played
-      const [selectedStatus, setSelectedStatus] = useState(null);
+      const [selectedStatus, setSelectedStatus] = useState(false);
       const [viwedStatus, setviewStatus] = useState(new Set());
 
       useEffect(() => {
@@ -25,8 +25,8 @@ const Status = () => {
       }, [getAllStatus, getMystatus]);
 
       // Handle clicking on a status
-      const handleStories = (data) => {
-            setSelectedStatus(data); // Set the selected status for display
+      const handleStories = () => {
+            setSelectedStatus(true); // Set the selected status for display
       };
       // Close the Statusplayer
       const closeStatusPlayer = () => {
@@ -135,7 +135,7 @@ const Status = () => {
                   {selectedStatus && (
                         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
                               <Statusplayer
-                                    stories={selectedStatus}
+                                    stories={myStatus[0]}
                                     closeplayer={closeStatusPlayer}
                                     setviwedStatus={setviewStatus}
                               />
