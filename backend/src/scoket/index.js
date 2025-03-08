@@ -98,9 +98,26 @@ const mountnegoation=(socket)=>{
 const mountnegoationdone=(socket)=>{
     socket.on(chatEventEnum.NAGONETIONDONE,(userId,ans)=>{
         console.log(`nogation done ${userId}`)
-        console.log(`socketId${socket.user._id} user${userId}`)
+        console.log(`socketId ${socket.user._id} user${userId},ans:${ans}`)
 
 socket.in(userId).emit(chatEventEnum.FINALNAGOTION,ans)
+
+    })
+}
+
+const mountAudioToggel=(socket)=>{
+      socket.on(chatEventEnum.AUDIOPAUSE,({isAudio,userId})=>{
+        console.log(`userID${userId} Audio${isAudio}`)
+        socket.in(userId).emit(chatEventEnum.AUDIOPAUSE)
+
+      })
+}
+
+
+const mountvideoToggel=(socket)=>{
+    socket.on(chatEventEnum.VIDEOPAUSE,({isvideo,userId})=>{
+      console.log(`userID${userId} video${isvideo}`)
+      socket.in(userId).emit(chatEventEnum.VIDEOPAUSE)
 
     })
 }

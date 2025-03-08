@@ -3,15 +3,17 @@ import peer from '@/services/peer';
 import { authstore } from '@/store/authstore';
 import { usecallStore } from '@/store/useCallStore';
 import { CircleGauge, Expand, Minimize } from 'lucide-react';
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { FaMicrophone, FaMicrophoneLinesSlash, FaVideo, FaVideoSlash } from 'react-icons/fa6';
 import { MdClose, MdNetworkPing } from 'react-icons/md';
 import Dragable from './Dragable';
+import IncomingVideocall from './Imcomingvideocal';
+import ReactPlayer from 'react-player';
 
 const Videocall = () => {
-      const streamRef = useRef(null);
-
-      const dragRef = useRef(null);
+     
+     
+      
       const {
             isInCall,
             endCall,
@@ -25,63 +27,60 @@ const Videocall = () => {
             isVideo,
             isAudio,
             endStream,
-            setIsVideo
-      } = usecallStore();
-      const { socket } = authstore();
+            setIsVideo,
+            setCallAccepted,
+            callAccpeted,
+            setIsAudio,
+            setRemoteStream,
+            remoteStream
 
+      } = usecallStore();
+      const { socket,authUser } = authstore();
       const videoRef = useRef(null);
       const remoteStreamRef = useRef(null);
 
+
       const handleAcceptCall = useCallback(
             async (callerID, answer) => {
+
+                  setCallAccepted()
+
                   try {
-      
-                      
-                        sendStream();
+                        if(Stream){
+
+                              sendStream();
+                              console.log(`sending stream`)
+                        }
                         // Ensure local description is set after adding tracks
                         await peer.setLocalDescription(answer);
                   } catch (error) {
-                        console.log("erro while call accpeting",error.message)
                   }
             },
             [Stream],
       );
 
-      const handleTrackEvent = async (event) => {
-            if (event.streams && event.streams[0]) {
-                try {
-                    if (remoteStreamRef.current) {
-                        remoteStreamRef.current.srcObject = event.streams[0];
-        
-                        // Ensure the video plays after setting the source
-                        remoteStreamRef.current.onloadedmetadata = () => {
-                            remoteStreamRef.current.play().catch((error) => {
-                                console.error('Error auto-playing remote video:', error);
-                            });
-                        };
-                    }
-                } catch (error) {
-                    console.error('Error setting remote stream:', error);
-                }
-            }
-      }, [isVideo, isMute]);
+      // const handleTrackEvent = async (event) => {
+      //       if (event.streams && event.streams[0]) {
+      //             try {
+      //                   if (remoteStreamRef.current) {
+      //                         remoteStreamRef.current.srcObject = event.streams[0];
 
-      useEffect(() => {
-            if (!socket) return;
-
-            socket.on(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, (callerId, ans) => {
-                  console.log(callerId, ans);
-
-                  peer.setLocalDescription(ans);
-            });
-      }, [socket]);
-=======
-        };
-        
+      //                         // Ensure the video plays after setting the source
+      //                         remoteStreamRef.current.onloadedmetadata = () => {
+      //                               remoteStreamRef.current.play().catch((error) => {
+      //                                     console.error('Error auto-playing remote video:', error);
+      //                               });
+      //                         };
+      //                   }
+      //             } catch (error) {
+      //                   console.error('Error setting remote stream:', error);
+      //             }
+      //       }
+      // };
 
       const handelnogation = useCallback(async () => {
             const offer = await peer.getoffer();
-            console.log(offer);
+            if(!socket)return
             socket.emit(chatEventEnum.NAGOTION_NEEDED, userId, offer);
       }, [userId, socket]);
 
@@ -94,106 +93,121 @@ const Videocall = () => {
       );
 
       const handelfinal = useCallback(async (ans) => {
-            console.log('final', ans);
-
+            console.log("nagaotion complete")
             await peer.setLocalDescription(ans);
       }, []);
 
-    
       useEffect(() => {
             peer.peer.addEventListener('negotiationneeded', handelnogation);
 
             return () => {
                   peer.peer?.removeEventListener?.('negotiationneeded', handelnogation);
             };
-      }, [sendStream]);
+      }, [remoteStream]);
 
       // Handle Incoming Remote Stream
       useEffect(() => {
-            peer.peer.addEventListener('track', handleTrackEvent);
+            peer.peer.addEventListener('track', setRemoteStream);
             return () => {
-                  peer.peer.removeEventListener('track', handleTrackEvent);
+                  peer.peer.removeEventListener('track', setRemoteStream);
             };
-      }, [sendStream]);
+      }, [startStream]);
+const handelremoteEndCall=()=>{
+}
 
+handelremoteAudio=async(isAudio)=>{
+      console.log("audio",isAudio)
+  const audiotrack=     peer.peer.getReceivers().find(r=>r.track?.kind==="audio")?.track
+  console.log(audiotrack)
+  if(audiotrack){
+      audiotrack.enabled=isAudio
+  }
+  }
+
+
+handelremotevideo=async(isVideo)=>{
+      console.log("video",isVideo)
+  const videotrack=     peer.peer.getReceivers().find(r=>r.track?.kind==="video")?.track
+  console.log(videotrack)
+  if(videotrack){
+      videotrack.enabled=isVideo
+
+  }
+
+}
 
       // Handle Video Call Events
       useEffect(() => {
             if (!socket) return;
 
             socket.on(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, handleAcceptCall);
+            socket.on(chatEventEnum.VIDEO_CALL_END_EVENT, handelremoteEndCall);
             socket.on(chatEventEnum.NAGOTION_NEEDED, handleIncomingNego);
             socket.on(chatEventEnum.FINALNAGOTION, handelfinal);
+            socket.on(chatEventEnum.AUDIOPAUSE,handelremoteAudio)
+            socket.on(chatEventEnum.VIDEOPAUSE,handelremotevideo)
             return () => {
                   socket.off(chatEventEnum.VIDEO_CALL_ACCEPT_EVENT, handleAcceptCall);
+                  socket.off(chatEventEnum.VIDEO_CALL_END_EVENT, handelremoteEndCall);
                   socket.off(chatEventEnum.NAGOTION_NEEDED, handleIncomingNego);
                   socket.off(chatEventEnum.FINALNAGOTION, handelfinal);
+                  socket.off(chatEventEnum.AUDIOPAUSE,handelremoteAudio)
+                  socket.off(chatEventEnum.VIDEOPAUSE,handelremotevideo)
+
             };
       }, [socket]);
 
       // Start/Stop Stream When Call Starts or Ends
       useEffect(() => {
             if (isInCall && !Stream) {
-                  startStream();
+                startStream();
             }
-
+        
             return () => {
-                  endStream();
+                if (Stream) {
+                    Stream.getTracks().forEach(track => track.stop()); // Stop all media tracks
+                    endStream();
+                }
             };
-      }, [isInCall]); // Remove `Stream` from dependencies
+        }, [isInCall]);
+         // Remove `Stream` from dependencies
 
-      useEffect(() => {
-            if (Stream && videoRef.current && !videoRef.current.srcObject) {
-                  
-                  videoRef.current.srcObject = Stream;
+      useEffect(()=>{
+            if(Stream&&videoRef.current){
+                  videoRef.current.srcObject=Stream
             }
-            return () => {
-                  if (streamRef.current) {
-                        streamRef.current.getTracks().forEach((track) => track.stop());
-                        streamRef.current = null;
-                  }
-            };
-      }, [isInCall, startStream]);
-=======
-      }, [Stream]);
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
-
+      },[Stream])
 
       useEffect(() => {
             if (Stream) {
-                console.log("Starting both user stream...");
-                sendStream();
+                  sendStream();
             }
-        }, [Stream, sendStream,handelfinal,handleAcceptCall]); // Runs when Stream is updated
+      }, [Stream]); // Runs when Stream is updated
+
+      // useEffect(() => {
+      //       if (remoteStreamRef.current && remoteStream) {
+      //           console.log(`Setting remote stream`);
+      //           remoteStreamRef.current.srcObject = remoteStream;
+      //           remoteStreamRef.current.onloadedmetadata = () => {
+      //               remoteStreamRef.current.play().catch(err => 
+      //                   console.error("Error playing remote stream:", err)
+      //               );
+      //           };
+      //       }
+      //   }, [remoteStream,]);
         
 
-        useEffect(() => {
-            if (remoteStreamRef.current && remoteStreamRef.current.srcObject) {
-                remoteStreamRef.current.play().catch(error => {
-                    console.error("Error auto-playing remote video:", error);
-                });
-            }
-        }, [remoteStreamRef.current?.srcObject]);
-        
-
-
+console.log(`remote stream `,remoteStream)
+  
       // End Call
       const handleEndCall = () => {
             endCall();
       };
 
-<<<<<<< HEAD
-      const handelMute = () => {
-            setisMute(!isMute);
-      };
-      const handelVideo = () => {
-            setIsVideo(!isVideo);
-      };
-
-=======
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
+ 
       if (!isInCall) return null;
 
+      
 
       const RemoteStream = () => {
             return (
@@ -203,9 +217,9 @@ const Videocall = () => {
                               className="border-2  w-80 relative  top-0 right-10 bg-black"
                         >
                               <div className="flex justify-center items-center flex-col ">
-                                    <video
-                                          ref={remoteStreamRef}
-                                          autoPlay
+                                    <ReactPlayer
+                                          url={remoteStream}
+                                          playing={true}
                                           playsInline
                                           className=" h-auto aspect-video object-cover rounded-lg "
                                     />
@@ -213,83 +227,9 @@ const Videocall = () => {
                         </Dragable>
                   </>
             );
-      };
+      }
 
       return (
-            <Dragable ref={dragRef} isMinimized={isMinimized}>
-                  {/* Header */}
-                  <div className={`${isMinimized ? 'w-80 h-56' : 'w-screen h-screen'} `}>
-                        <div
-                              className="flex justify-between items-center p-2 bg-gray-800"
-                              style={{ cursor: isMinimized ? 'grab' : 'default' }}
-                        >
-                              <span>Video Call</span>
-                              <div className="flex space-x-2">
-                                    <button
-                                          onClick={(e) => {
-                                                e.stopPropagation();
-                                                toggleMinimized();
-                                          }}
-                                          className="text-sm bg-gray-600 px-2 py-1 rounded"
-                                    >
-                                          {isMinimized ? <Expand /> : <Minimize />}
-                                    </button>
-                                    <button
-                                          onClick={(e) => {
-                                                e.stopPropagation();
-                                                endcall();
-                                          }}
-                                          className="text-sm bg-red-500 px-2 py-1 rounded"
-                                    >
-                                          <MdClose />
-                                    </button>
-                              </div>
-                        </div>
-
-                        <div className="flex items-center justify-center w-full h-full">
-                              {error ? (
-                                    <p className="text-red-500 text-center px-4">{error}</p>
-                              ) : (
-                                    <video
-                                          ref={videoRef}
-                                          autoPlay
-                                          className=" w-screen h-full  aspect-video object-contain "
-                                    />
-                              )}
-                        </div>
-
-                        {/* footer */}
-                        <div className="fixed  bottom-10 w-full ">
-                              <div className="flex items-center justify-center p-2 w-full  gap-8">
-                                    <button
-                                          onClick={handelMute}
-                                          className="text-white bg-slate-900 rounded-full p-4"
-                                    >
-                                          {isMute ? (
-                                                <FaMicrophone size={25} />
-                                          ) : (
-                                                <FaMicrophoneLinesSlash
-                                                      size={25}
-                                                      className="text-red-500"
-                                                />
-                                          )}
-                                    </button>
-
-                                    <button
-                                          onClick={handelVideo}
-                                          className="text-white bg-slate-900 rounded-full p-4"
-                                    >
-                                          {isVideo ? (
-                                                <FaVideo size={25} />
-                                          ) : (
-                                                <FaVideoSlash size={25} className="text-red-500" />
-                                          )}
-                                    </button>
-                              </div>
-                        </div>
-                  </div>
-            </Dragable>
-=======
             <>
                   <Dragable isMinimized={isMinimized}>
                         {/* Header */}
@@ -328,12 +268,21 @@ const Videocall = () => {
                                                       {error}
                                                 </p>
                                           ) : (
-                                                <video
-                                                      ref={videoRef}
-                                                      autoPlay
-                                                      playsInline
-                                                      className="w-screen h-full aspect-video object-contain"
-                                                />
+                                                <div className="">
+                                                      <video
+                                                            ref={videoRef}
+                                                            autoPlay
+                                                            playsInline
+                                                            muted
+                                                            className="w-screen h-screen aspect-video object-contain"
+                                                      />
+                                                      
+                                                       {/* <ReactPlayer
+                                                       url={Stream}
+                                                       playing={true}
+                                                       muted
+                                                       /> */}
+                                                </div>
                                           )}
                                     </div>
 
@@ -343,8 +292,16 @@ const Videocall = () => {
                               </div>
                               {/* Footer Controls */}
                               <div className="fixed bottom-10 w-full">
+                                    { 
+                                    !callAccpeted && (
+                                          <div className="aboslute left-1/2 -translate-x-1/2  top-1/2 -translate-y-1/2 animate-bounce text-white text-center">
+                                                <button className="bg-red-600 p-3 rounded-2xl">
+                                                      Ringing...
+                                                </button>
+                                          </div>
+                                    )}
                                     <div className="flex items-center justify-center p-2 w-full gap-8">
-                                          <button className="text-white bg-slate-900 rounded-full p-4">
+                                          <button className="text-white bg-slate-900 rounded-full p-4" onClick={setIsAudio}>
                                                 {isAudio ? (
                                                       <FaMicrophone size={25} />
                                                 ) : (
@@ -355,7 +312,10 @@ const Videocall = () => {
                                                 )}
                                           </button>
 
-                                          <button className="text-white bg-slate-900 rounded-full p-4" onClick={setIsVideo}>
+                                          <button
+                                                className="text-white bg-slate-900 rounded-full p-4"
+                                                onClick={setIsVideo}
+                                          >
                                                 {isVideo ? (
                                                       <FaVideo size={25} />
                                                 ) : (
@@ -366,14 +326,13 @@ const Videocall = () => {
                                                 )}
                                           </button>
 
-                                          <button onClick={sendStream}>start stream</button>
+                                          <button onClick={endCall}>endCall</button>
                                     </div>
                               </div>
                         </div>
                   </Dragable>
             </>
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
       );
-};
+}
 
 export default Videocall;

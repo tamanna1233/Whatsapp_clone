@@ -1,12 +1,5 @@
-<<<<<<< HEAD
-import React, { useRef, useState, useEffect } from 'react';
 
-const Dragable = React.forwardRef(({ isMinimized, children }, ref) => {
-      const dragRef = useRef(null);
-      const [isDragging, setIsDragging] = useState(false);
-      const [position, setPosition] = useState({ x: 1300, y: 500 });
 
-=======
 import React, { useRef, useState, useEffect, useId } from 'react';
 
 /* This code defines a functional React component called `Dragable` using the `React.forwardRef`
@@ -17,7 +10,6 @@ const Dragable = React.forwardRef(({ isMinimized, children, className }, ref) =>
       const [isDragging, setIsDragging] = useState(false);
       const [position, setPosition] = useState({ x: 100, y: 100 });
       const id = useId();
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
       const handleMouseDown = (e) => {
             if (!isMinimized) return; // Prevent drag when fullscreen
             setIsDragging(true);
@@ -49,13 +41,7 @@ const Dragable = React.forwardRef(({ isMinimized, children, className }, ref) =>
 
       return (
             <div
-<<<<<<< HEAD
-                  className={`fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden z-50
-`}
-=======
-                  className={`${className} fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden z-50 
-                        `}
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
+                  className={`fixed bg-black text-white shadow-lg transition-all rounded-lg overflow-hidden  z-50`}
                   style={{
                         transform: isMinimized
                               ? `translate(${position.x}px, ${position.y}px)`
@@ -63,11 +49,8 @@ const Dragable = React.forwardRef(({ isMinimized, children, className }, ref) =>
                         cursor: isMinimized ? (isDragging ? 'grabbing' : 'grab') : 'default',
                   }}
                   onMouseDown={handleMouseDown}
-<<<<<<< HEAD
-=======
                   htmlFor={id}
                   ref={ref}
->>>>>>> 5d759b8e9ae707086410d3d8ec94f0f83f0f4f39
             >
                   {children}
             </div>
